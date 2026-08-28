@@ -1,58 +1,124 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# APC Business Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem digital untuk bisnis **APC — Atribut Paskibra Cikarang**, terdiri dari:
 
-## About Laravel
+1. **Public Website** — menampilkan produk, portfolio, dan CTA WhatsApp.
+2. **Internal Admin System** — mengelola customer, lead, order, produksi, pembayaran, pengeluaran, invoice, dan laporan keuangan.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Laravel 13** (PHP 8.3)
+- **MySQL / MariaDB**
+- **Bootstrap 5.3** + Bootstrap Icons (compiled via Vite + Sass)
+- **barryvdh/laravel-dompdf** untuk invoice PDF
+- **Vanilla JavaScript** (no SPA / React / Vue)
 
-## Learning Laravel
+Dirancang untuk **shared hosting murah**: tidak butuh Redis, Supervisor, Docker, atau Node runtime di server.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Fitur Utama
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### Public Website
+- Homepage (hero, featured products, portfolio, why APC, CTA)
+- Katalog produk + filter kategori + search
+- Detail produk + WhatsApp CTA otomatis
+- Portfolio publik + dokumentasi
+- Halaman statis (Tentang, FAQ, Kontak)
+- SEO (sitemap.xml, robots.txt, meta tags, OG tags)
 
-## Agentic Development
+### Admin
+- Dashboard operasional + finance KPIs (omzet, payment in, piutang, HPP, expense, gross/net profit)
+- **Product Management** (CRUD + upload gambar + kategori)
+- **Customer & Lead Management**
+- **Order Management** dengan workflow lengkap:
+  - Lead → Quotation → Confirmed → DP Received → Design → Production → QC → Ready → Completed
+  - Cancel tersedia
+- **Production Kanban Board** (visual tracking per status, warning deadline)
+- **Payment & Expense** tracking
+- **Invoice PDF** (DomPDF) dengan format profesional
+- **Portfolio Management** (admin CRUD + image gallery)
+- **Settings** (nama bisnis, WhatsApp, logo, bank info, currency, dll — semua configurable, NO hardcode)
+- **Reports** (revenue, expense, profit, top customer, top produk)
+- **Role** (super_admin / admin / staff) dengan server-side Gate authorization
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
+
+## Setup Lokal
 
 ```bash
-composer require laravel/boost --dev
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
 
-php artisan boost:install
+# Configure DB di .env
+php artisan migrate --seed
+php artisan storage:link
+npm run build
+
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Login: `admin@apc.local` / `password` (ubah setelah login pertama).
 
-## Contributing
+Lihat **[DEPLOY.md](DEPLOY.md)** untuk deployment ke shared hosting.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Tests
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan test
+```
 
-## Security Vulnerabilities
+28 automated tests mencakup: authentication, authorization, CRUD produk/customer/order/payment, kalkulasi order total, payment status, invoice number format, WhatsApp URL builder, public site rendering.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## Struktur
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+app/
+├── Models/           # Eloquent models
+├── Services/         # NumberGenerator, Formatter
+├── Support/          # Settings, WhatsApp helpers
+├── Http/
+│   ├── Controllers/
+│   │   ├── Public/   # Site publik
+│   │   └── Admin/    # Dashboard, CRUD, finance
+│   └── Requests/Admin/  # Form Request Validation
+└── Providers/        # AppServiceProvider (Gate definitions)
+
+database/
+├── migrations/       # Schema (13 tables)
+└── seeders/          # Default user + FAQ + expense categories
+
+resources/
+├── sass/app.scss     # Bootstrap + custom theme
+└── views/
+    ├── public/       # Public site
+    ├── admin/        # Admin CRUD
+    └── partials/     # Shared navbar, sidebar, etc.
+
+routes/
+├── web.php           # Public + admin
+└── admin.php         # Admin area (auth required)
+
+tests/Feature/        # 28 feature tests
+```
+
+---
+
+## Nomor Penting
+
+- **Order Number**: `ORD-0001-08-2026` (prefix-running-Bulan-Tahun)
+- **Invoice Number**: `INV-0001-08-2026` (sesuai requirement: prefix-nomor urut-bulan-tahun)
+
+---
+
+## Lisensi
+
+Proprietary — Internal APC.

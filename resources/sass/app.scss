@@ -1,0 +1,125 @@
+// Bootstrap 5 entry point — APC Business Management System
+// Vendor styles
+@import "bootstrap/scss/bootstrap";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+// APC design tokens
+$apc-red: #C1272D;
+$apc-red-dark: #9B1F24;
+$apc-navy: #1F2937;
+$apc-gold: #D4A24C;
+
+:root {
+    --apc-red: #{$apc-red};
+    --apc-red-dark: #{$apc-red-dark};
+    --apc-navy: #{$apc-navy};
+    --apc-gold: #{$apc-gold};
+}
+
+// APC custom components
+.apc-brand-color { color: var(--apc-red) !important; }
+.apc-brand-bg { background-color: var(--apc-red) !important; color: #fff; }
+.apc-btn-wa {
+    background-color: #25D366;
+    color: #fff;
+    border-color: #25D366;
+    &:hover, &:focus {
+        background-color: #1DA851;
+        color: #fff;
+        border-color: #1DA851;
+    }
+}
+
+.apc-hero {
+    background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+    color: #fff;
+    min-height: 520px;
+    display: flex;
+    align-items: center;
+}
+
+.apc-card {
+    border: 1px solid #E5E7EB;
+    border-radius: 0.75rem;
+    transition: box-shadow .2s, transform .2s;
+    &:hover {
+        box-shadow: 0 8px 24px rgba(0,0,0,.08);
+        transform: translateY(-2px);
+    }
+}
+
+.apc-section {
+    padding: 4rem 0;
+    @media (max-width: 768px) {
+        padding: 2.5rem 0;
+    }
+}
+
+.apc-placeholder-img {
+    background: #F3F4F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9CA3AF;
+}
+
+.apc-kanban {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+.apc-kanban-col {
+    background: #F9FAFB;
+    border-radius: .5rem;
+    padding: .75rem;
+    min-height: 200px;
+}
+.apc-kanban-card {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: .375rem;
+    padding: .75rem;
+    margin-bottom: .5rem;
+    cursor: grab;
+}
+
+// Auth screens
+.apc-auth-bg {
+    min-height: 100vh;
+    background: #F9FAFB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+// Admin sidebar
+.apc-sidebar {
+    background: #1F2937;
+    min-height: 100vh;
+    width: 240px;
+    color: #E5E7EB;
+    a {
+        color: #D1D5DB;
+        display: block;
+        padding: .65rem 1rem;
+        border-radius: .375rem;
+        text-decoration: none;
+        &:hover { background: rgba(255,255,255,.06); color: #fff; }
+        &.active { background: var(--apc-red); color: #fff; }
+    }
+}
+
+// Stat tile
+.apc-stat {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: .5rem;
+    padding: 1rem;
+    .apc-stat-label { color: #6B7280; font-size: .875rem; }
+    .apc-stat-value { font-size: 1.5rem; font-weight: 600; color: #111827; }
+}
+
+// Utility
+.cursor-pointer { cursor: pointer; }
+.text-apc-red { color: var(--apc-red) !important; }
