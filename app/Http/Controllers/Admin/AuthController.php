@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,17 +29,25 @@ class AuthController extends Controller
 
         if (! $request->user()->isAdmin()) {
             Auth::logout();
+
             return back()->withErrors(['email' => 'Anda tidak memiliki akses ke area admin.'])->withInput();
         }
+
+        Activity::record('auth.login', $request->user());
 
         return redirect()->intended(route('admin.dashboard'));
     }
 
     public function logout(Request $request)
     {
+        $user = $request->user();
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+        if ($user) {
+            Activity::record('auth.logout', null, ['user_id' => $user->id]);
+        }
+
         return redirect()->route('admin.login');
     }
 }

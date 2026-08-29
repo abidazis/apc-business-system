@@ -7,7 +7,7 @@ use App\Http\Requests\Admin\OrderRequest;
 use App\Models\Customer;
 use App\Models\Lead;
 use App\Models\Order;
-use App\Models\OrderItem;
+use App\Services\Activity;
 use App\Services\NumberGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,9 +17,8 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $orders = Order::with('customer')
-            ->when($request->get('q'), fn ($q, $term) =>
-                $q->where('order_number', 'like', "%{$term}%")
-                  ->orWhereHas('customer', fn ($qq) => $qq->where('name', 'like', "%{$term}%")))
+            ->when($request->get('q'), fn ($q, $term) => $q->where('order_number', 'like', "%{$term}%")
+                ->orWhereHas('customer', fn ($qq) => $qq->where('name', 'like', "%{$term}%")))
             ->when($request->get('status'), fn ($q, $s) => $q->where('status', $s))
             ->when($request->get('customer'), fn ($q, $id) => $q->where('customer_id', $id))
             ->latest('order_date')
@@ -34,6 +33,7 @@ class OrderController extends Controller
         $customers = Customer::orderBy('name')->get();
         $leads = Lead::whereNotIn('status', ['won', 'lost'])->latest()->limit(50)->get();
         $lead = $request->filled('lead') ? Lead::find($request->lead) : null;
+
         return view('admin.orders.create', compact('customers', 'leads', 'lead'));
     }
 
@@ -57,6 +57,8 @@ class OrderController extends Controller
                 Lead::where('id', $order->lead_id)->update(['status' => 'won']);
             }
 
+            Activity::record('order.created', $order, ['order_number' => $order->order_number]);
+
             return redirect()->route('admin.orders.show', $order)->with('success', 'Order dibuat.');
         });
     }
@@ -64,6 +66,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load(['customer', 'items', 'payments', 'invoice', 'lead']);
+
         return view('admin.orders.show', compact('order'));
     }
 
@@ -71,6 +74,7 @@ class OrderController extends Controller
     {
         $customers = Customer::orderBy('name')->get();
         $order->load('items');
+
         return view('admin.orders.edit', compact('order', 'customers'));
     }
 
@@ -89,6 +93,8 @@ class OrderController extends Controller
             }
             $order->recalculateTotals();
 
+            Activity::record('order.updated', $order);
+
             return redirect()->route('admin.orders.show', $order)->with('success', 'Order diperbarui.');
         });
     }
@@ -96,15 +102,20 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         $order->delete();
+        Activity::record('order.deleted', null, ['order_number' => $order->order_number]);
+
         return redirect()->route('admin.orders.index')->with('success', 'Order dihapus.');
     }
 
     public function updateStatus(Request $request, Order $order)
     {
         $data = $request->validate([
-            'status' => ['required', 'in:' . implode(',', array_keys(Order::STATUSES))],
+            'status' => ['required', 'in:'.implode(',', array_keys(Order::STATUSES))],
         ]);
+        $from = $order->status;
         $order->update(['status' => $data['status'], 'updated_by' => $request->user()->id]);
+        Activity::record('order.status_changed', $order, ['from' => $from, 'to' => $data['status']]);
+
         return back()->with('success', 'Status order diperbarui.');
     }
 }

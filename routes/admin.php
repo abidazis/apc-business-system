@@ -1,7 +1,22 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ExpenseCategoryController;
+use App\Http\Controllers\Admin\ExpenseController;
+use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\Admin\LeadController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PortfolioController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductionController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,42 +36,42 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('logout');
 
     // Authenticated admin area
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth', 'admin.active'])->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
         // Resources
-        Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
-        Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
-        Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class);
-        Route::resource('leads', \App\Http\Controllers\Admin\LeadController::class);
-        Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
-        Route::post('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
+        Route::resource('products', ProductController::class);
+        Route::resource('categories', CategoryController::class);
+        Route::resource('customers', CustomerController::class);
+        Route::resource('leads', LeadController::class);
+        Route::resource('orders', OrderController::class);
+        Route::post('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
 
         // Production Kanban
-        Route::get('production', [\App\Http\Controllers\Admin\ProductionController::class, 'index'])->name('production.index');
+        Route::get('production', [ProductionController::class, 'index'])->name('production.index');
 
         // Payments
-        Route::resource('payments', \App\Http\Controllers\Admin\PaymentController::class);
+        Route::resource('payments', PaymentController::class);
 
         // Expenses
-        Route::resource('expenses', \App\Http\Controllers\Admin\ExpenseController::class);
-        Route::resource('expense-categories', \App\Http\Controllers\Admin\ExpenseCategoryController::class);
+        Route::resource('expenses', ExpenseController::class);
+        Route::resource('expense-categories', ExpenseCategoryController::class);
 
         // Invoices
-        Route::resource('invoices', \App\Http\Controllers\Admin\InvoiceController::class);
-        Route::get('invoices/{invoice}/pdf', [\App\Http\Controllers\Admin\InvoiceController::class, 'pdf'])->name('invoices.pdf');
+        Route::resource('invoices', InvoiceController::class);
+        Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
 
         // Portfolio
-        Route::resource('portfolio', \App\Http\Controllers\Admin\PortfolioController::class);
-        Route::post('portfolio/{portfolio}/images', [\App\Http\Controllers\Admin\PortfolioController::class, 'uploadImage'])->name('portfolio.images.upload');
-        Route::delete('portfolio-images/{image}', [\App\Http\Controllers\Admin\PortfolioController::class, 'deleteImage'])->name('portfolio.images.delete');
+        Route::resource('portfolio', PortfolioController::class);
+        Route::post('portfolio/{portfolio}/images', [PortfolioController::class, 'uploadImage'])->name('portfolio.images.upload');
+        Route::delete('portfolio-images/{image}', [PortfolioController::class, 'deleteImage'])->name('portfolio.images.delete');
 
         // Settings, Reports, FAQ, Pages
-        Route::get('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
-        Route::post('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
-        Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
-        Route::resource('faqs', \App\Http\Controllers\Admin\FaqController::class)->except(['show']);
-        Route::resource('pages', \App\Http\Controllers\Admin\PageController::class)->except(['show']);
+        Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+        Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::resource('faqs', FaqController::class)->except(['show']);
+        Route::resource('pages', PageController::class)->except(['show']);
     });
 });

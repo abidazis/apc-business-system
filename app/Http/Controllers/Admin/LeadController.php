@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\LeadRequest;
 use App\Models\Customer;
 use App\Models\Lead;
 use App\Models\User;
+use App\Services\Activity;
 use Illuminate\Http\Request;
 
 class LeadController extends Controller
@@ -14,14 +15,14 @@ class LeadController extends Controller
     public function index(Request $request)
     {
         $leads = Lead::with('customer', 'assignee')
-            ->when($request->get('q'), fn ($q, $term) =>
-                $q->where('contact_name', 'like', "%{$term}%")
-                  ->orWhere('organization', 'like', "%{$term}%")
-                  ->orWhere('phone', 'like', "%{$term}%"))
+            ->when($request->get('q'), fn ($q, $term) => $q->where('contact_name', 'like', "%{$term}%")
+                ->orWhere('organization', 'like', "%{$term}%")
+                ->orWhere('phone', 'like', "%{$term}%"))
             ->when($request->get('status'), fn ($q, $s) => $q->where('status', $s))
             ->latest()
             ->paginate(20)
             ->withQueryString();
+
         return view('admin.leads.index', compact('leads'));
     }
 
@@ -29,18 +30,22 @@ class LeadController extends Controller
     {
         $customers = Customer::orderBy('name')->get();
         $users = User::where('is_active', true)->orderBy('name')->get();
+
         return view('admin.leads.create', compact('customers', 'users'));
     }
 
     public function store(LeadRequest $request)
     {
-        Lead::create($request->validated());
+        $lead = Lead::create($request->validated());
+        Activity::record('lead.created', $lead);
+
         return redirect()->route('admin.leads.index')->with('success', 'Lead ditambahkan.');
     }
 
     public function show(Lead $lead)
     {
         $lead->load('customer', 'assignee');
+
         return view('admin.leads.show', compact('lead'));
     }
 
@@ -48,18 +53,25 @@ class LeadController extends Controller
     {
         $customers = Customer::orderBy('name')->get();
         $users = User::where('is_active', true)->orderBy('name')->get();
+
         return view('admin.leads.edit', compact('lead', 'customers', 'users'));
     }
 
     public function update(LeadRequest $request, Lead $lead)
     {
+        $from = $lead->status;
         $lead->update($request->validated());
+        if ($lead->status !== $from) {
+            Activity::record('lead.status_changed', $lead, ['from' => $from, 'to' => $lead->status]);
+        }
+
         return redirect()->route('admin.leads.index')->with('success', 'Lead diperbarui.');
     }
 
     public function destroy(Lead $lead)
     {
         $lead->delete();
+
         return redirect()->route('admin.leads.index')->with('success', 'Lead dihapus.');
     }
 }

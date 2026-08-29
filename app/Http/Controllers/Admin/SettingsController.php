@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\Activity;
 use App\Support\Settings;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
     public function index()
     {
         $values = Settings::all();
+
         return view('admin.settings.index', compact('values'));
     }
 
@@ -50,6 +51,8 @@ class SettingsController extends Controller
         foreach ($data as $key => $value) {
             Settings::set($key, $value, $key === 'invoice_prefix' || $key === 'order_prefix' || $key === 'currency' ? 'invoice' : 'general');
         }
+
+        Activity::record('settings.updated', null, ['keys' => array_keys($data)]);
 
         return back()->with('success', 'Settings disimpan.');
     }

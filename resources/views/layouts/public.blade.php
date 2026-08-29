@@ -23,10 +23,23 @@
     <meta property="og:locale" content="id_ID">
     @hasSection('og_image')
         <meta property="og:image" content="@yield('og_image')">
+    @else
+        @php $heroImg = \App\Support\Settings::get('hero_image'); @endphp
+        @if($heroImg)
+            <meta property="og:image" content="{{ asset('storage/' . $heroImg) }}">
+        @endif
     @endif
     @hasSection('meta_title')
         <meta property="og:title" content="@yield('meta_title')">
+    @else
+        <meta property="og:title" content="@yield('title')">
     @endif
+    <meta property="og:url" content="{{ url()->current() }}">
+    @hasSection('meta_description')
+        <meta property="og:description" content="@yield('meta_description')">
+    @endif
+
+    <link rel="canonical" href="{{ url()->current() }}">
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

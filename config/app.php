@@ -123,4 +123,10 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    // APC Business System custom configuration
+    'apc' => [
+        // Backup storage path (relative to chosen disk)
+        'backup_path' => env('APC_BACKUP_PATH', 'backups'),
+    ],
+
 ];

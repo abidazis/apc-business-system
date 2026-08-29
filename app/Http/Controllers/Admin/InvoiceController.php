@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\InvoiceRequest;
 use App\Models\Invoice;
 use App\Models\Order;
+use App\Services\Activity;
 use App\Services\NumberGenerator;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -15,13 +16,13 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         $invoices = Invoice::with(['customer', 'order'])
-            ->when($request->get('q'), fn ($q, $term) =>
-                $q->where('invoice_number', 'like', "%{$term}%")
-                  ->orWhereHas('customer', fn ($qq) => $qq->where('name', 'like', "%{$term}%")))
+            ->when($request->get('q'), fn ($q, $term) => $q->where('invoice_number', 'like', "%{$term}%")
+                ->orWhereHas('customer', fn ($qq) => $qq->where('name', 'like', "%{$term}%")))
             ->when($request->get('status'), fn ($q, $s) => $q->where('status', $s))
             ->latest('issue_date')
             ->paginate(25)
             ->withQueryString();
+
         return view('admin.invoices.index', compact('invoices'));
     }
 
@@ -37,6 +38,7 @@ class InvoiceController extends Controller
             ->orderByDesc('order_date')
             ->limit(200)
             ->get();
+
         return view('admin.invoices.create', compact('orders', 'order'));
     }
 
@@ -62,12 +64,15 @@ class InvoiceController extends Controller
             'notes' => $request->notes,
         ]);
 
+        Activity::record('invoice.created', $invoice, ['invoice_number' => $invoice->invoice_number]);
+
         return redirect()->route('admin.invoices.show', $invoice)->with('success', 'Invoice dibuat.');
     }
 
     public function show(Invoice $invoice)
     {
         $invoice->load(['order.items', 'order.payments', 'customer']);
+
         return view('admin.invoices.show', compact('invoice'));
     }
 
@@ -78,7 +83,7 @@ class InvoiceController extends Controller
         $pdf = Pdf::loadView('admin.invoices.pdf', compact('invoice'))
             ->setPaper('a4', 'portrait');
 
-        return $pdf->stream($invoice->invoice_number . '.pdf');
+        return $pdf->stream($invoice->invoice_number.'.pdf');
     }
 
     public function edit(Invoice $invoice)
@@ -89,12 +94,17 @@ class InvoiceController extends Controller
     public function update(InvoiceRequest $request, Invoice $invoice)
     {
         $invoice->update($request->validated());
+        Activity::record('invoice.updated', $invoice);
+
         return redirect()->route('admin.invoices.show', $invoice)->with('success', 'Invoice diperbarui.');
     }
 
     public function destroy(Invoice $invoice)
     {
+        $number = $invoice->invoice_number;
         $invoice->delete();
+        Activity::record('invoice.deleted', null, ['invoice_number' => $number]);
+
         return redirect()->route('admin.invoices.index')->with('success', 'Invoice dihapus.');
     }
 }

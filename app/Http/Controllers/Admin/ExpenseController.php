@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ExpenseRequest;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
+use App\Services\Activity;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
@@ -22,12 +23,14 @@ class ExpenseController extends Controller
             ->withQueryString();
 
         $categories = ExpenseCategory::orderBy('name')->get();
+
         return view('admin.expenses.index', compact('expenses', 'categories'));
     }
 
     public function create()
     {
         $categories = ExpenseCategory::orderBy('name')->get();
+
         return view('admin.expenses.create', compact('categories'));
     }
 
@@ -35,25 +38,32 @@ class ExpenseController extends Controller
     {
         $data = $request->validated();
         $data['created_by'] = $request->user()->id;
-        Expense::create($data);
+        $expense = Expense::create($data);
+        Activity::record('expense.recorded', $expense, ['amount' => (float) $expense->amount]);
+
         return redirect()->route('admin.expenses.index')->with('success', 'Pengeluaran dicatat.');
     }
 
     public function edit(Expense $expense)
     {
         $categories = ExpenseCategory::orderBy('name')->get();
+
         return view('admin.expenses.edit', compact('expense', 'categories'));
     }
 
     public function update(ExpenseRequest $request, Expense $expense)
     {
         $expense->update($request->validated());
+
         return redirect()->route('admin.expenses.index')->with('success', 'Pengeluaran diperbarui.');
     }
 
     public function destroy(Expense $expense)
     {
+        $id = $expense->id;
         $expense->delete();
+        Activity::record('expense.deleted', null, ['expense_id' => $id]);
+
         return redirect()->route('admin.expenses.index')->with('success', 'Pengeluaran dihapus.');
     }
 }

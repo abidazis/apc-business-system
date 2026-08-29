@@ -99,4 +99,88 @@
         </table>
     </div>
 </div>
+
+<div class="row g-3 mt-1">
+    <div class="col-12 col-lg-7">
+        <div class="apc-card">
+            <div class="p-3 p-md-4 d-flex align-items-center justify-content-between border-bottom" style="border-color: var(--apc-border) !important;">
+                <div>
+                    <h2 style="font-size: 16px; font-weight: 700; margin: 0;">Production Overview</h2>
+                    <p class="apc-muted small mb-0">{{ $productionTotal }} order sedang dalam proses produksi.</p>
+                </div>
+                <a href="{{ route('admin.production.index') }}" class="apc-btn apc-btn-outline-dark apc-btn-sm">Buka Kanban</a>
+            </div>
+            <div class="p-3 p-md-4">
+                <div class="row g-2">
+                    @php
+                        $stageLabels = [
+                            'confirmed' => ['label' => 'Confirmed', 'icon' => 'check2-circle'],
+                            'design' => ['label' => 'Design', 'icon' => 'palette'],
+                            'production' => ['label' => 'Produksi', 'icon' => 'hammer'],
+                            'quality_control' => ['label' => 'QC', 'icon' => 'shield-check'],
+                            'ready_to_deliver' => ['label' => 'Siap Kirim', 'icon' => 'box-seam'],
+                        ];
+                    @endphp
+                    @foreach($productionStages as $stage)
+                        <div class="col">
+                            <a href="{{ route('admin.orders.index', ['status' => $stage]) }}" class="text-decoration-none">
+                                <div class="apc-stat apc-stat-dark text-center">
+                                    <div class="apc-stat-label"><i class="bi bi-{{ $stageLabels[$stage]['icon'] }}"></i> {{ $stageLabels[$stage]['label'] }}</div>
+                                    <div class="apc-stat-value">{{ $productionCounts[$stage] ?? 0 }}</div>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+        <div class="apc-card h-100">
+            <div class="p-3 p-md-4 d-flex align-items-center justify-content-between border-bottom" style="border-color: var(--apc-border) !important;">
+                <div>
+                    <h2 style="font-size: 16px; font-weight: 700; margin: 0;">Aktivitas Terbaru</h2>
+                    <p class="apc-muted small mb-0">15 aktivitas terakhir di sistem.</p>
+                </div>
+            </div>
+            <div class="p-3" style="max-height: 320px; overflow-y: auto;">
+                @forelse($recentActivity as $a)
+                    <div class="d-flex gap-2 py-2" style="border-bottom: 1px dashed var(--apc-border); font-size: 13px;">
+                        <span class="apc-badge apc-badge-light" style="flex-shrink: 0;">
+                            @switch($a->event)
+                                @case('order.created') <i class="bi bi-receipt"></i> Order @break
+                                @case('order.status_changed') <i class="bi bi-arrow-repeat"></i> Status @break
+                                @case('payment.recorded') <i class="bi bi-cash-coin"></i> Bayar @break
+                                @case('expense.recorded') <i class="bi bi-wallet2"></i> Expense @break
+                                @case('invoice.created') <i class="bi bi-file-earmark-text"></i> Invoice @break
+                                @case('settings.updated') <i class="bi bi-sliders"></i> Settings @break
+                                @case('auth.login') <i class="bi bi-box-arrow-in-right"></i> Login @break
+                                @case('auth.logout') <i class="bi bi-box-arrow-right"></i> Logout @break
+                                @case('product.created') <i class="bi bi-box"></i> Produk @break
+                                @default <i class="bi bi-circle"></i> {{ $a->event }} @break
+                            @endswitch
+                        </span>
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="text-truncate">
+                                {{ $a->user->name ?? '—' }}
+                                <span class="apc-muted small">{{ $a->created_at->diffForHumans() }}</span>
+                            </div>
+                            @if($a->properties && isset($a->properties['order_number']))
+                                <div class="apc-muted small">{{ $a->properties['order_number'] }}</div>
+                            @elseif($a->properties && isset($a->properties['invoice_number']))
+                                <div class="apc-muted small">{{ $a->properties['invoice_number'] }}</div>
+                            @endif
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center apc-muted py-4">
+                        <i class="bi bi-clock-history" style="font-size:24px;"></i>
+                        <div class="mt-1">Belum ada aktivitas.</div>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

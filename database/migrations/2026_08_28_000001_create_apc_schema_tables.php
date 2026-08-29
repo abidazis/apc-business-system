@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('settings', function (Blueprint $table) {
@@ -87,7 +88,7 @@ return new class extends Migration {
             $table->enum('status', [
                 'lead', 'quotation', 'confirmed', 'dp_received',
                 'design', 'production', 'quality_control', 'ready_to_deliver',
-                'completed', 'cancelled'
+                'completed', 'cancelled',
             ])->default('lead');
             $table->decimal('subtotal', 15, 2)->default(0);
             $table->decimal('discount', 15, 2)->default(0);
@@ -205,8 +206,8 @@ return new class extends Migration {
 
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
-            $table->string('loggable_type');
-            $table->unsignedBigInteger('loggable_id');
+            $table->string('loggable_type')->nullable();
+            $table->unsignedBigInteger('loggable_id')->nullable();
             $table->string('event');
             $table->json('properties')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();

@@ -18,21 +18,21 @@
     <style>
         body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 12px; color: #111; margin: 0; padding: 24px; }
         h1, h2, h3 { margin: 0; }
-        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #C1272D; padding-bottom: 16px; margin-bottom: 24px; }
-        .brand h2 { color: #C1272D; font-size: 22px; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #FFC600; padding-bottom: 16px; margin-bottom: 24px; }
+        .brand h2 { color: #0B0B0B; font-size: 22px; }
         .brand p { font-size: 11px; color: #555; margin: 2px 0; }
         .invoice-meta { text-align: right; }
-        .invoice-meta h1 { font-size: 22px; color: #C1272D; }
+        .invoice-meta h1 { font-size: 22px; color: #0B0B0B; }
         .invoice-meta p { margin: 2px 0; font-size: 11px; }
         .customer { margin-bottom: 24px; }
         .customer h3 { font-size: 13px; margin-bottom: 4px; color: #555; text-transform: uppercase; letter-spacing: .05em; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-        th { background: #F3F4F6; color: #111; padding: 8px; text-align: left; border-bottom: 2px solid #C1272D; font-size: 11px; text-transform: uppercase; letter-spacing: .03em; }
+        th { background: #F3F4F6; color: #111; padding: 8px; text-align: left; border-bottom: 2px solid #FFC600; font-size: 11px; text-transform: uppercase; letter-spacing: .03em; }
         td { padding: 8px; border-bottom: 1px solid #E5E7EB; }
         .text-end { text-align: right; }
         .totals { width: 320px; margin-left: auto; }
         .totals td { border: none; padding: 4px 8px; }
-        .totals .grand td { font-weight: bold; font-size: 14px; border-top: 2px solid #C1272D; padding-top: 8px; }
+        .totals .grand td { font-weight: bold; font-size: 14px; border-top: 2px solid #FFC600; padding-top: 8px; }
         .footer { margin-top: 32px; border-top: 1px solid #E5E7EB; padding-top: 16px; font-size: 11px; color: #555; }
         .footer .row { display: flex; justify-content: space-between; }
     </style>
@@ -103,7 +103,7 @@
 
     @if($bankName || $bankAccNum)
         <div style="margin-top: 24px; padding: 12px; background: #F9FAFB; border-radius: 4px;">
-            <strong style="color: #C1272D;">Informasi Pembayaran</strong><br>
+            <strong style="color: #0B0B0B;">Informasi Pembayaran</strong><br>
             @if($bankName)Bank: {{ $bankName }}<br>@endif
             @if($bankAccName)a.n. {{ $bankAccName }}<br>@endif
             @if($bankAccNum)No. Rekening: <strong>{{ $bankAccNum }}</strong>@endif

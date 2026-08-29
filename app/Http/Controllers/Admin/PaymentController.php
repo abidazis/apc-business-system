@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PaymentRequest;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Services\Activity;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -18,6 +19,7 @@ class PaymentController extends Controller
             ->latest('payment_date')
             ->paginate(25)
             ->withQueryString();
+
         return view('admin.payments.index', compact('payments'));
     }
 
@@ -29,6 +31,7 @@ class PaymentController extends Controller
             ->limit(200)
             ->get();
         $selected = $request->filled('order') ? Order::find($request->order) : null;
+
         return view('admin.payments.create', compact('orders', 'selected'));
     }
 
@@ -36,25 +39,36 @@ class PaymentController extends Controller
     {
         $data = $request->validated();
         $data['created_by'] = $request->user()->id;
-        Payment::create($data);
+        $payment = Payment::create($data);
+        Activity::record('payment.recorded', $payment, [
+            'order_id' => $payment->order_id,
+            'amount' => (float) $payment->amount,
+        ]);
+
         return redirect()->route('admin.payments.index')->with('success', 'Pembayaran dicatat.');
     }
 
     public function edit(Payment $payment)
     {
         $orders = Order::whereNotIn('status', ['cancelled'])->with('customer')->limit(200)->get();
+
         return view('admin.payments.edit', compact('payment', 'orders'));
     }
 
     public function update(PaymentRequest $request, Payment $payment)
     {
         $payment->update($request->validated());
+        Activity::record('payment.updated', $payment, ['amount' => (float) $payment->amount]);
+
         return redirect()->route('admin.payments.index')->with('success', 'Pembayaran diperbarui.');
     }
 
     public function destroy(Payment $payment)
     {
+        $paymentId = $payment->id;
         $payment->delete();
+        Activity::record('payment.deleted', null, ['payment_id' => $paymentId]);
+
         return redirect()->route('admin.payments.index')->with('success', 'Pembayaran dihapus.');
     }
 }
