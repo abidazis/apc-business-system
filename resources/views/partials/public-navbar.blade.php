@@ -2,6 +2,7 @@
     $businessName = \App\Support\Settings::get('business_name', 'APC');
     $businessShort = \App\Support\Settings::get('business_short', 'APC');
     $currentRoute = request()->route() ? request()->route()->getName() : null;
+    $isHomepage = request()->routeIs('public.home');
 @endphp
 <header class="apc-nav" id="apcNav">
     <div class="apc-container apc-nav-inner">
@@ -11,11 +12,11 @@
         </a>
 
         <nav class="apc-nav-links" aria-label="Primary">
-            <a href="{{ route('public.products.index') }}" class="{{ str_starts_with((string)$currentRoute, 'public.products') ? 'is-active' : '' }}">Produk</a>
-            <a href="{{ route('public.portfolio.index') }}" class="{{ str_starts_with((string)$currentRoute, 'public.portfolio') ? 'is-active' : '' }}">Portfolio</a>
-            <a href="{{ url('/tentang') }}" class="{{ request()->is('tentang') ? 'is-active' : '' }}">Tentang</a>
-            <a href="{{ url('/faq') }}" class="{{ request()->is('faq') ? 'is-active' : '' }}">FAQ</a>
-            <a href="{{ url('/kontak') }}" class="{{ request()->is('kontak') ? 'is-active' : '' }}">Kontak</a>
+            <a href="{{ $isHomepage ? '#produk' : route('public.products.index') }}" class="{{ str_starts_with((string)$currentRoute, 'public.products') ? 'is-active' : '' }}">Produk</a>
+            <a href="{{ $isHomepage ? '#portfolio' : route('public.portfolio.index') }}" class="{{ str_starts_with((string)$currentRoute, 'public.portfolio') ? 'is-active' : '' }}">Portfolio</a>
+            <a href="{{ $isHomepage ? '#tentang' : url('/tentang') }}" class="{{ request()->is('tentang') ? 'is-active' : '' }}">Tentang</a>
+            <a href="{{ $isHomepage ? '#faq' : url('/faq') }}" class="{{ request()->is('faq') ? 'is-active' : '' }}">FAQ</a>
+            <a href="{{ $isHomepage ? '#cara-order' : url('/kontak') }}" class="{{ request()->is('kontak') ? 'is-active' : '' }}">Kontak</a>
         </nav>
 
         <div class="apc-nav-actions">
@@ -42,11 +43,11 @@
             </button>
         </div>
         <nav class="apc-drawer-body" aria-label="Mobile">
-            <a href="{{ route('public.products.index') }}" class="{{ str_starts_with((string)$currentRoute, 'public.products') ? 'is-active' : '' }}">Produk</a>
-            <a href="{{ route('public.portfolio.index') }}" class="{{ str_starts_with((string)$currentRoute, 'public.portfolio') ? 'is-active' : '' }}">Portfolio</a>
-            <a href="{{ url('/tentang') }}">Tentang</a>
-            <a href="{{ url('/faq') }}">FAQ</a>
-            <a href="{{ url('/kontak') }}">Kontak</a>
+            <a href="{{ $isHomepage ? '#produk' : route('public.products.index') }}" class="{{ str_starts_with((string)$currentRoute, 'public.products') ? 'is-active' : '' }}">Produk</a>
+            <a href="{{ $isHomepage ? '#portfolio' : route('public.portfolio.index') }}" class="{{ str_starts_with((string)$currentRoute, 'public.portfolio') ? 'is-active' : '' }}">Portfolio</a>
+            <a href="{{ $isHomepage ? '#tentang' : url('/tentang') }}">Tentang</a>
+            <a href="{{ $isHomepage ? '#faq' : url('/faq') }}">FAQ</a>
+            <a href="{{ $isHomepage ? '#cara-order' : url('/kontak') }}">Kontak</a>
         </nav>
         <div class="apc-drawer-foot">
             <a href="{{ \App\Support\WhatsApp::url(\App\Support\WhatsApp::messageGeneral()) }}" target="_blank" rel="noopener" class="apc-btn apc-btn-wa apc-btn-block apc-btn-lg">

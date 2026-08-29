@@ -48,6 +48,22 @@
         @include('partials.floating-wa')
     @endif
 
+    @if(isset($isHomepage) && $isHomepage)
+    <script>
+    (function () {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+            anchor.addEventListener('click', function (e) {
+                var target = document.querySelector(this.getAttribute('href'));
+                if (!target) return;
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    })();
+    </script>
+    @endif
+
     @stack('scripts')
 </body>
 </html>

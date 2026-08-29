@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Faq;
-use App\Models\Page;
 use App\Models\PortfolioProject;
 use App\Models\Product;
-use App\Support\Settings;
 
 class HomeController extends Controller
 {
@@ -31,6 +30,22 @@ class HomeController extends Controller
             ->limit(6)
             ->get();
 
-        return view('public.home', compact('featuredProducts', 'latestProducts', 'portfolios'));
+        $categories = Category::where('is_active', true)
+            ->withCount('products')
+            ->orderBy('sort_order')
+            ->get();
+
+        $homepageFaqs = Faq::where('is_published', true)
+            ->orderBy('sort_order')
+            ->limit(5)
+            ->get();
+
+        return view('public.home', compact(
+            'featuredProducts',
+            'latestProducts',
+            'portfolios',
+            'categories',
+            'homepageFaqs'
+        ));
     }
 }
