@@ -1,34 +1,29 @@
 @extends('layouts.admin')
 @section('title', 'Production Board')
 @section('content')
-<h4 class="fw-bold mb-3">Production Board</h4>
-<div class="apc-kanban">
-    @foreach($columns as $key => $label)
-        <div class="apc-kanban-col">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="fw-semibold mb-0">{{ $label }}</h6>
-                <span class="badge text-bg-secondary">{{ isset($orders[$key]) ? $orders[$key]->count() : 0 }}</span>
-            </div>
-            @forelse(($orders[$key] ?? collect()) as $o)
-                <div class="apc-kanban-card">
-                    <div class="d-flex justify-content-between align-items-start mb-1">
-                        <a href="{{ route('admin.orders.show', $o) }}" class="fw-semibold text-decoration-none text-dark">{{ $o->order_number }}</a>
-                        @if($o->isOverdue())
-                            <span class="badge text-bg-danger small">Overdue</span>
-                        @elseif($o->isDeadlineNear())
-                            <span class="badge text-bg-warning small">Segera</span>
-                        @endif
-                    </div>
-                    <small class="text-muted d-block">{{ $o->customer->name ?? '-' }}</small>
-                    <div class="d-flex justify-content-between mt-2">
-                        <small class="text-muted">{{ $o->deadline ? \App\Services\Formatter::dateId($o->deadline) : '-' }}</small>
-                        <small class="fw-bold">{{ \App\Services\Formatter::money($o->total) }}</small>
-                    </div>
+    <x-admin::page-header title="Production Board" subtitle="Visual tracking pesanan berdasarkan status produksi" />
+    <div class="apc-kanban">
+        @foreach($columns as $key => $label)
+            <div class="apc-kanban-col">
+                <div class="apc-kanban-col-head">
+                    <h6>{{ $label }}</h6>
+                    <span class="count">{{ isset($orders[$key]) ? $orders[$key]->count() : 0 }}</span>
                 </div>
-            @empty
-                <div class="text-center text-muted small py-3">— kosong —</div>
-            @endforelse
-        </div>
-    @endforeach
-</div>
+                @forelse(($orders[$key] ?? collect()) as $o)
+                    <a href="{{ route('admin.orders.show', $o) }}" class="apc-kanban-card d-block" style="color: inherit; text-decoration: none;">
+                        <h6>{{ $o->order_number }}</h6>
+                        <div class="meta">{{ $o->customer->name ?? '-' }}</div>
+                        <div class="foot">
+                            <span class="meta">{{ $o->deadline ? \App\Services\Formatter::dateId($o->deadline) : '-' }}</span>
+                            <span><strong>{{ \App\Services\Formatter::money($o->total) }}</strong></span>
+                        </div>
+                        @if($o->isOverdue())<span class="apc-badge apc-badge-danger mt-1">Overdue</span>
+                        @elseif($o->isDeadlineNear())<span class="apc-badge apc-badge-warning mt-1">Segera</span>@endif
+                    </a>
+                @empty
+                    <div class="text-center apc-muted small py-3">— kosong —</div>
+                @endforelse
+            </div>
+        @endforeach
+    </div>
 @endsection

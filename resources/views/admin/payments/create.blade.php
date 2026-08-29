@@ -1,12 +1,19 @@
 @extends('layouts.admin')
 @section('title', 'Tambah Pembayaran')
 @section('content')
-<form method="POST" action="{{ route('admin.payments.store') }}">
-    @csrf
-    @include('admin.payments._form', ['orders' => $orders, 'payment' => null, 'selected' => $selected])
-    <div class="d-flex gap-2 mt-4">
-        <button class="btn apc-brand-bg">Simpan</button>
-        <a href="{{ route('admin.payments.index') }}" class="btn btn-outline-secondary">Batal</a>
-    </div>
-</form>
+    <x-admin::page-header title="Tambah Pembayaran">
+        <a href="{{ route('admin.payments.index') }}" class="apc-btn apc-btn-ghost apc-btn-sm"><i class="bi bi-arrow-left"></i> Kembali</a>
+    </x-admin::page-header>
+    <form method="POST" action="{{ route('admin.payments.store') }}">
+        @csrf
+        <div class="apc-card" style="max-width: 700px;">
+            <div class="card-body p-3 p-md-4">
+                @include('admin.payments._form', ['orders' => $orders, 'payment' => null, 'selected' => $selected])
+            </div>
+        </div>
+        <div class="d-flex gap-2 mt-4">
+            <button class="apc-btn apc-btn-primary">Simpan</button>
+            <a href="{{ route('admin.payments.index') }}" class="apc-btn apc-btn-ghost">Batal</a>
+        </div>
+    </form>
 @endsection

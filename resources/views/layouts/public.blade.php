@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0B0B0B">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @hasSection('title')
@@ -27,18 +28,25 @@
         <meta property="og:title" content="@yield('meta_title')">
     @endif
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="d-flex flex-column min-vh-100 bg-white">
+<body>
     @include('partials.public-navbar')
 
-    <main class="flex-grow-1">
+    <main>
         @yield('content')
     </main>
 
     @include('partials.public-footer')
+
+    @if(!isset($hideFloatingWa) || !$hideFloatingWa)
+        @include('partials.floating-wa')
+    @endif
 
     @stack('scripts')
 </body>

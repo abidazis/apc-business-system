@@ -1,9 +1,13 @@
 @extends('layouts.admin')
 @section('title', 'Tambah Kategori')
 @section('content')
-<form method="POST" action="{{ route('admin.expense-categories.store') }}">
-    @csrf
-    @include('admin.expense-categories._form', ['category' => null])
-    <button class="btn apc-brand-bg mt-3">Simpan</button>
-</form>
+    <x-admin::page-header title="Tambah Kategori"><a href="{{ route('admin.expense-categories.index') }}" class="apc-btn apc-btn-ghost apc-btn-sm"><i class="bi bi-arrow-left"></i> Kembali</a></x-admin::page-header>
+    <form method="POST" action="{{ route('admin.expense-categories.store') }}">
+        @csrf
+        <div class="apc-card" style="max-width: 600px;"><div class="card-body p-3 p-md-4">@include('admin.expense-categories._form')</div></div>
+        <div class="d-flex gap-2 mt-4">
+            <button class="apc-btn apc-btn-primary">Simpan</button>
+            <a href="{{ route('admin.expense-categories.index') }}" class="apc-btn apc-btn-ghost">Batal</a>
+        </div>
+    </form>
 @endsection

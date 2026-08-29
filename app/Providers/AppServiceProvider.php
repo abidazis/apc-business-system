@@ -15,6 +15,7 @@ use App\Models\Setting;
 use App\Models\Page;
 use App\Models\Faq;
 use App\Models\User;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +28,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Anonymous Blade components: <x-admin::page-header />, <x-admin::empty-state />
+        Blade::anonymousComponentPath(resource_path('views/admin/components'), 'admin');
+        // Shared product card component on public site: <x-product-card />
+        Blade::anonymousComponentPath(resource_path('views/partials'));
+
         // Gates: server-side authorization for admin area.
         // - super_admin: full access
         // - admin: orders/customers/products/production/invoice/payment
