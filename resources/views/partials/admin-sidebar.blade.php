@@ -3,6 +3,7 @@
     $bizShort = \App\Support\Settings::get('business_short', 'APC');
     $nav = [
         ['route' => 'admin.dashboard',           'label' => 'Dashboard',     'icon' => 'speedometer2', 'group' => 'Utama'],
+        ['route' => 'admin.users.index',         'label' => 'Users',         'icon' => 'people', 'group' => 'Utama'],
         ['route' => 'admin.orders.index',       'label' => 'Orders',        'icon' => 'receipt', 'group' => 'Operasional'],
         ['route' => 'admin.production.index',   'label' => 'Production',    'icon' => 'diagram-3', 'group' => 'Operasional'],
         ['route' => 'admin.customers.index',    'label' => 'Customers',     'icon' => 'people', 'group' => 'Operasional'],

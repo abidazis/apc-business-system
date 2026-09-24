@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Page;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -64,7 +65,15 @@ class PublicSiteTest extends TestCase
 
     public function test_about_faq_contact_pages_render(): void
     {
-        $this->get('/tentang')->assertOk();
+        // Create About page for dynamic CMS
+        Page::create([
+            'slug' => 'tentang',
+            'title' => 'Tentang APC',
+            'content' => '<p>Content about APC.</p>',
+            'is_published' => true,
+        ]);
+
+        $this->get('/tentang')->assertOk()->assertSee('Tentang APC');
         $this->get('/faq')->assertOk();
         $this->get('/kontak')->assertOk();
     }

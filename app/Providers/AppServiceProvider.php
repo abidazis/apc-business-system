@@ -2,18 +2,18 @@
 
 namespace App\Providers;
 
+use App\Models\Category;
 use App\Models\Customer;
+use App\Models\Expense;
+use App\Models\Faq;
+use App\Models\Invoice;
 use App\Models\Lead;
 use App\Models\Order;
+use App\Models\Page;
 use App\Models\Payment;
-use App\Models\Expense;
-use App\Models\Invoice;
 use App\Models\PortfolioProject;
 use App\Models\Product;
-use App\Models\Category;
 use App\Models\Setting;
-use App\Models\Page;
-use App\Models\Faq;
 use App\Models\User;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
@@ -66,5 +66,8 @@ class AppServiceProvider extends ServiceProvider
             Gate::define("{$base}.manage", fn (User $u) => $u->isAdmin() && $u->isActive());
             Gate::define("{$base}.view", fn (User $u) => $u->isAdmin() && $u->isActive());
         }
+
+        // Users — super_admin only
+        Gate::define('User.manage', fn (User $u) => $u->isSuperAdmin());
     }
 }

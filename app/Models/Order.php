@@ -27,6 +27,35 @@ class Order extends Model
         'confirmed', 'design', 'production', 'quality_control', 'ready_to_deliver',
     ];
 
+    /**
+     * Valid status transitions.
+     * Key = current status, Value = array of allowed next statuses.
+     */
+    public const STATUS_TRANSITIONS = [
+        'lead' => ['quotation', 'cancelled'],
+        'quotation' => ['confirmed', 'cancelled'],
+        'confirmed' => ['dp_received', 'cancelled'],
+        'dp_received' => ['design', 'cancelled'],
+        'design' => ['production', 'cancelled'],
+        'production' => ['quality_control', 'cancelled'],
+        'quality_control' => ['ready_to_deliver', 'production', 'cancelled'],
+        'ready_to_deliver' => ['completed', 'cancelled'],
+        'completed' => [], // Final state
+        'cancelled' => [], // Final state
+    ];
+
+    public function canTransitionTo(string $newStatus): bool
+    {
+        $allowed = self::STATUS_TRANSITIONS[$this->status] ?? [];
+
+        return in_array($newStatus, $allowed, true);
+    }
+
+    public function getNextPossibleStatuses(): array
+    {
+        return self::STATUS_TRANSITIONS[$this->status] ?? [];
+    }
+
     protected $fillable = [
         'order_number', 'customer_id', 'lead_id', 'order_date', 'deadline',
         'status', 'subtotal', 'discount', 'shipping_cost', 'total', 'notes',
@@ -94,8 +123,13 @@ class Order extends Model
 
     public function getPaymentStatusAttribute(): string
     {
-        if ($this->total_paid <= 0) return 'unpaid';
-        if ($this->outstanding > 0) return 'partial';
+        if ($this->total_paid <= 0) {
+            return 'unpaid';
+        }
+        if ($this->outstanding > 0) {
+            return 'partial';
+        }
+
         return 'paid';
     }
 

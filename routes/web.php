@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\HomeController;
-use App\Http\Controllers\Public\ProductController as PublicProductController;
+use App\Http\Controllers\Public\PageController;
 use App\Http\Controllers\Public\PortfolioController as PublicPortfolioController;
+use App\Http\Controllers\Public\ProductController as PublicProductController;
+use App\Http\Controllers\Public\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -15,12 +17,13 @@ Route::get('/produk/{slug}', [PublicProductController::class, 'show'])->name('pu
 Route::get('/portfolio', [PublicPortfolioController::class, 'index'])->name('public.portfolio.index');
 Route::get('/portfolio/{slug}', [PublicPortfolioController::class, 'show'])->name('public.portfolio.show');
 
-Route::view('/tentang', 'public.about')->name('public.about');
+Route::get('/tentang', [PageController::class, 'show'])->defaults('slug', 'tentang')->name('public.about');
 Route::view('/faq', 'public.faq')->name('public.faq');
 Route::view('/kontak', 'public.contact')->name('public.contact');
+Route::post('/kontak', [ContactController::class, 'submit'])->name('public.contact.submit');
 
 // Sitemap
-Route::get('/sitemap.xml', [\App\Http\Controllers\Public\SitemapController::class, 'index'])->name('sitemap');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 // Named 'login' used by Laravel's auth middleware to redirect guests.
 Route::get('/login', fn () => redirect()->route('admin.login'))->name('login');
@@ -29,4 +32,4 @@ Route::get('/login', fn () => redirect()->route('admin.login'))->name('login');
 // guests to route('login') → /login → /admin/login. Authenticated users on
 // /admin/login are bounced to dashboard via AuthController attempt flow.
 
-require __DIR__ . '/admin.php';
+require __DIR__.'/admin.php';

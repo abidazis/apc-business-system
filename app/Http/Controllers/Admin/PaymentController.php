@@ -45,14 +45,10 @@ class PaymentController extends Controller
             'amount' => (float) $payment->amount,
         ]);
 
+        // Auto-update invoice status if exists
+        $this->syncInvoiceStatus($payment->order);
+
         return redirect()->route('admin.payments.index')->with('success', 'Pembayaran dicatat.');
-    }
-
-    public function edit(Payment $payment)
-    {
-        $orders = Order::whereNotIn('status', ['cancelled'])->with('customer')->limit(200)->get();
-
-        return view('admin.payments.edit', compact('payment', 'orders'));
     }
 
     public function update(PaymentRequest $request, Payment $payment)
@@ -60,15 +56,41 @@ class PaymentController extends Controller
         $payment->update($request->validated());
         Activity::record('payment.updated', $payment, ['amount' => (float) $payment->amount]);
 
+        // Auto-update invoice status if exists
+        $this->syncInvoiceStatus($payment->order);
+
         return redirect()->route('admin.payments.index')->with('success', 'Pembayaran diperbarui.');
     }
 
     public function destroy(Payment $payment)
     {
+        $order = $payment->order;
         $paymentId = $payment->id;
         $payment->delete();
         Activity::record('payment.deleted', null, ['payment_id' => $paymentId]);
 
+        // Auto-update invoice status if exists
+        $this->syncInvoiceStatus($order);
+
         return redirect()->route('admin.payments.index')->with('success', 'Pembayaran dihapus.');
+    }
+
+    private function syncInvoiceStatus(Order $order): void
+    {
+        $invoice = $order->invoice;
+        if (! $invoice) {
+            return;
+        }
+
+        $totalPaid = (float) $order->payments()->sum('amount');
+        $total = (float) $order->total;
+
+        if ($totalPaid <= 0) {
+            $invoice->update(['status' => 'unpaid']);
+        } elseif ($totalPaid >= $total) {
+            $invoice->update(['status' => 'paid']);
+        } else {
+            $invoice->update(['status' => 'partial']);
+        }
     }
 }

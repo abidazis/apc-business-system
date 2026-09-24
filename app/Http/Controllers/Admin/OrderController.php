@@ -112,9 +112,23 @@ class OrderController extends Controller
         $data = $request->validate([
             'status' => ['required', 'in:'.implode(',', array_keys(Order::STATUSES))],
         ]);
+
+        $newStatus = $data['status'];
         $from = $order->status;
-        $order->update(['status' => $data['status'], 'updated_by' => $request->user()->id]);
-        Activity::record('order.status_changed', $order, ['from' => $from, 'to' => $data['status']]);
+
+        // Validate status transition
+        if (! $order->canTransitionTo($newStatus)) {
+            $allowed = $order->getNextPossibleStatuses();
+            $allowedLabels = array_map(fn ($s) => Order::STATUSES[$s], $allowed);
+            $message = $allowedLabels
+                ? 'Status tidak valid. Status berikutnya yang diperbolehkan: '.implode(', ', $allowedLabels)
+                : 'Status tidak dapat diubah dari '.Order::STATUSES[$from].'.';
+
+            return back()->withErrors(['status' => $message])->withInput();
+        }
+
+        $order->update(['status' => $newStatus, 'updated_by' => $request->user()->id]);
+        Activity::record('order.status_changed', $order, ['from' => $from, 'to' => $newStatus]);
 
         return back()->with('success', 'Status order diperbarui.');
     }

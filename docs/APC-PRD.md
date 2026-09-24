@@ -1,8 +1,8 @@
 # APC — PRODUCT REQUIREMENTS DOCUMENT
 
 ```
-PRD Version: 1.0.0
-Last Updated: 2026-09-01
+PRD Version: 1.1.0
+Last Updated: 2026-09-24
 Status: Active
 ```
 
@@ -836,6 +836,33 @@ database/migrations/
 ---
 
 ## 23. Change Log
+
+### 2026-09-24
+
+**Change:** Major feature implementations and fixes
+
+**Features Implemented:**
+1. **Contact Form Handler** - POST route, ContactController, Lead auto-creation from form
+2. **User Management CRUD** - Full CRUD, role assignment, activate/deactivate, gate authorization
+3. **Order Status Transition Validation** - `canTransitionTo()`, `getNextPossibleStatuses()` methods, UI dropdown filter
+4. **Invoice Auto-Update on Payment** - Invoice status sync when payments created/updated/deleted
+
+**Affected Modules:**
+- Contact (Public) - ContactController, contact.blade.php
+- Users - UserController, UserRequest, 3 views (index, create, edit, show)
+- Orders - OrderController, Order model (status transitions)
+- Payments - PaymentController (invoice sync)
+- AppServiceProvider (Gate definitions)
+
+**Database:** No
+
+**Breaking Change:** No
+
+**Tests:** 28 tests passing
+
+**Implemented By:** Claude Agent
+
+---
 
 ### 2026-09-01
 
