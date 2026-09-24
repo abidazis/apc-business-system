@@ -52,6 +52,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('categories', CategoryController::class);
         Route::resource('customers', CustomerController::class);
         Route::resource('leads', LeadController::class);
+        Route::post('leads/{lead}/convert-to-customer', [LeadController::class, 'convertToCustomer'])->name('leads.convert-to-customer');
         Route::resource('orders', OrderController::class);
         Route::post('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
 

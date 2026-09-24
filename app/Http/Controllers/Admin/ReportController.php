@@ -7,7 +7,6 @@ use App\Models\Customer;
 use App\Models\Expense;
 use App\Models\Order;
 use App\Models\Payment;
-use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -33,10 +32,17 @@ class ReportController extends Controller
                 break;
         }
 
-        $revenue = (float) Order::whereBetween('order_date', [$start, $end])->sum('total');
+        // Revenue: only from non-cancelled orders
+        $revenue = (float) Order::whereBetween('order_date', [$start, $end])
+            ->whereNotIn('status', ['cancelled'])
+            ->sum('total');
+
         $payment = (float) Payment::whereBetween('payment_date', [$start, $end])->sum('amount');
         $expense = (float) Expense::whereBetween('date', [$start, $end])->sum('amount');
+
+        // HPP: only from non-cancelled orders
         $hpp = (float) Order::whereBetween('order_date', [$start, $end])
+            ->whereNotIn('status', ['cancelled'])
             ->with('items')
             ->get()
             ->sum(fn ($o) => $o->hpp_total);
@@ -46,21 +52,24 @@ class ReportController extends Controller
 
         $orders = Order::with('customer')
             ->whereBetween('order_date', [$start, $end])
+            ->whereNotIn('status', ['cancelled'])
             ->latest('order_date')
             ->limit(50)
             ->get();
 
-        // Top customers
-        $topCustomers = Customer::withSum(['orders as total_orders_value' => fn ($q) => $q->whereBetween('order_date', [$start, $end])], 'total')
+        // Top customers: only from non-cancelled orders
+        $topCustomers = Customer::withSum(['orders as total_orders_value' => fn ($q) => $q->whereBetween('order_date', [$start, $end])->whereNotIn('status', ['cancelled'])], 'total')
             ->orderByDesc('total_orders_value')
             ->limit(10)
             ->get();
 
         // Top products by order items (manual join)
+        // Top products: only from non-cancelled orders
         $topProducts = \DB::table('order_items')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->join('products', 'products.id', '=', 'order_items.product_id')
             ->whereBetween('orders.order_date', [$start, $end])
+            ->whereNotIn('orders.status', ['cancelled'])
             ->selectRaw('products.id, products.name, SUM(order_items.quantity) as qty, SUM(order_items.subtotal) as revenue')
             ->groupBy('products.id', 'products.name')
             ->orderByDesc('qty')

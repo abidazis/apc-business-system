@@ -18,17 +18,25 @@ class DashboardController extends Controller
         Gate::authorize('admin.access');
         [$start, $end, $preset] = $this->resolveRange($request);
 
-        $ordersInRange = Order::whereBetween('order_date', [$start, $end]);
+        // Omzet: only active orders (not cancelled)
+        $ordersInRange = Order::whereBetween('order_date', [$start, $end])
+            ->whereNotIn('status', ['cancelled']);
         $omzet = (clone $ordersInRange)->sum('total');
+
         $paymentIn = (float) Payment::whereBetween('payment_date', [$start, $end])->sum('amount');
         $expenseIn = (float) Expense::whereBetween('date', [$start, $end])->sum('amount');
+
+        // HPP: only from non-cancelled orders
         $hpp = (float) Order::whereBetween('order_date', [$start, $end])
+            ->whereNotIn('status', ['cancelled'])
             ->with('items')
             ->get()
             ->sum(fn ($o) => $o->hpp_total);
+
         $grossProfit = (float) $omzet - $hpp;
         $netProfit = $grossProfit - $expenseIn;
 
+        // Piutang: only from active orders (not completed, not cancelled)
         $piutang = (float) Order::whereIn('status', ['confirmed', 'dp_received', 'design', 'production', 'quality_control', 'ready_to_deliver'])
             ->get()
             ->sum(fn ($o) => $o->outstanding);

@@ -4,7 +4,9 @@
     <x-admin::page-header :title="$order->order_number" :subtitle="$order->customer->name ?? '-'">
         <a href="{{ route('admin.orders.index') }}" class="apc-btn apc-btn-ghost apc-btn-sm"><i class="bi bi-arrow-left"></i> Kembali</a>
         <a href="{{ \App\Support\WhatsApp::url(\App\Support\WhatsApp::messageForOrder($order->order_number)) }}" target="_blank" rel="noopener" class="apc-btn apc-btn-wa apc-btn-sm"><i class="bi bi-whatsapp"></i> Chat</a>
-        <a href="{{ route('admin.invoices.create', ['order' => $order->id]) }}" class="apc-btn apc-btn-outline-dark apc-btn-sm">Buat Invoice</a>
+        @if(!$order->invoice)
+            <a href="{{ route('admin.invoices.create', ['order' => $order->id]) }}" class="apc-btn apc-btn-outline-dark apc-btn-sm">Buat Invoice</a>
+        @endif
         <a href="{{ route('admin.orders.edit', $order) }}" class="apc-btn apc-btn-primary apc-btn-sm"><i class="bi bi-pencil"></i> Edit</a>
     </x-admin::page-header>
 
@@ -22,8 +24,20 @@
                     <h6 class="fw-bold mb-3" style="font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--apc-text-muted);">Informasi</h6>
                     <table class="apc-table" style="background: transparent;">
                         <tr><th style="width:140px;">Customer</th><td><a href="{{ route('admin.customers.show', $order->customer) }}" style="color:var(--apc-ink);font-weight:600;">{{ $order->customer->name ?? '-' }}</a></td></tr>
+                        @if($order->lead)
+                        <tr><th>Lead</th><td><a href="{{ route('admin.leads.show', $order->lead) }}">{{ $order->lead->contact_name }}</a></td></tr>
+                        @endif
                         <tr><th>Tanggal</th><td>{{ \App\Services\Formatter::dateId($order->order_date) }}</td></tr>
-                        <tr><th>Deadline</th><td>{{ $order->deadline ? \App\Services\Formatter::dateId($order->deadline) : '-' }}</td></tr>
+                        <tr><th>Deadline</th><td>
+                            @if($order->deadline)
+                                <span class="{{ $order->isOverdue() ? 'text-danger fw-semibold' : ($order->isDeadlineNear() ? 'text-warning fw-semibold' : '') }}">
+                                    {{ \App\Services\Formatter::dateId($order->deadline) }}
+                                    @if($order->isOverdue()) <span class="apc-badge apc-badge-danger ms-1">Overdue</span>
+                                    @elseif($order->isDeadlineNear()) <span class="apc-badge apc-badge-warning ms-1">Segera</span>
+                                    @endif
+                                </span>
+                            @else - @endif
+                        </td></tr>
                         <tr><th>Status Bayar</th><td>@php $ps = $order->payment_status; @endphp<span class="apc-badge apc-badge-{{ $ps === 'paid' ? 'success' : ($ps === 'partial' ? 'warning' : 'danger') }}">{{ $ps === 'paid' ? 'Lunas' : ($ps === 'partial' ? 'Sebagian' : 'Belum') }}</span></td></tr>
                         <tr><th>Catatan</th><td>{!! nl2br(e($order->notes ?: '-')) !!}</td></tr>
                     </table>
@@ -109,7 +123,7 @@
             <div class="card-body p-3 p-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div>
                     <strong>Invoice: {{ $order->invoice->invoice_number }}</strong>
-                    <div class="apc-muted small">Status: {{ \App\Models\Invoice::STATUSES[$order->invoice->status] ?? $order->invoice->status }}</div>
+                    <div class="apc-muted small">Status: <span class="apc-badge apc-badge-{{ $order->invoice->status === 'paid' ? 'success' : ($order->invoice->status === 'partial' ? 'warning' : 'danger') }}">{{ \App\Models\Invoice::STATUSES[$order->invoice->status] ?? $order->invoice->status }}</span></div>
                 </div>
                 <div class="d-flex gap-2">
                     <a href="{{ route('admin.invoices.show', $order->invoice) }}" class="apc-btn apc-btn-outline-dark apc-btn-sm">Lihat Invoice</a>

@@ -74,4 +74,31 @@ class LeadController extends Controller
 
         return redirect()->route('admin.leads.index')->with('success', 'Lead dihapus.');
     }
+
+    public function convertToCustomer(Lead $lead)
+    {
+        // If already has customer, redirect to it
+        if ($lead->customer_id && $lead->customer) {
+            return redirect()->route('admin.customers.show', $lead->customer);
+        }
+
+        // Create customer from lead data
+        $customer = Customer::create([
+            'name' => $lead->contact_name,
+            'organization' => $lead->organization,
+            'phone' => $lead->phone,
+            'email' => $lead->email,
+            'notes' => "Dibuat dari Lead #{$lead->id}\nTanggal: ".now()->format('d M Y'),
+        ]);
+
+        // Link lead to customer
+        $lead->update(['customer_id' => $customer->id]);
+
+        Activity::record('lead.converted_to_customer', $lead, [
+            'customer_id' => $customer->id,
+        ]);
+
+        return redirect()->route('admin.customers.show', $customer)
+            ->with('success', "Customer dibuat dari Lead {$lead->contact_name}.");
+    }
 }
