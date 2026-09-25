@@ -24,9 +24,11 @@ class CustomerController extends Controller
         return view('admin.customers.index', compact('customers'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.customers.create');
+        $redirectTo = $request->get('redirect_to');
+
+        return view('admin.customers.create', compact('redirectTo'));
     }
 
     public function show(Customer $customer)
@@ -40,6 +42,20 @@ class CustomerController extends Controller
     {
         $customer = Customer::create($request->validated());
         Activity::record('customer.created', $customer);
+
+        $redirectTo = $request->get('redirect_to');
+        if ($redirectTo) {
+            $url = parse_url($redirectTo);
+            $baseUrl = $url['path'] ?? '/admin/orders/create';
+            $query = [];
+            if (isset($url['query'])) {
+                parse_str($url['query'], $query);
+            }
+            $query['customer'] = $customer->id;
+            $redirectUrl = $baseUrl.'?'.http_build_query($query);
+
+            return redirect()->to($redirectUrl)->with('success', 'Customer dibuat.');
+        }
 
         return redirect()->route('admin.customers.index')->with('success', 'Customer ditambahkan.');
     }

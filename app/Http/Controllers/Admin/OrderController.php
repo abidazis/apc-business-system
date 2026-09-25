@@ -32,9 +32,11 @@ class OrderController extends Controller
     {
         $customers = Customer::orderBy('name')->get();
         $leads = Lead::whereNotIn('status', ['won', 'lost'])->latest()->limit(50)->get();
-        $lead = $request->filled('lead') ? Lead::find($request->lead) : null;
 
-        return view('admin.orders.create', compact('customers', 'leads', 'lead'));
+        $lead = $request->filled('lead') ? Lead::find($request->lead) : null;
+        $customer = $request->filled('customer') ? Customer::find($request->customer) : null;
+
+        return view('admin.orders.create', compact('customers', 'leads', 'lead', 'customer'));
     }
 
     public function store(OrderRequest $request)

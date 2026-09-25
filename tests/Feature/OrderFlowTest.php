@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Customer;
+use App\Models\Lead;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
@@ -17,6 +18,17 @@ class OrderFlowTest extends TestCase
     protected function admin(): User
     {
         return User::factory()->create(['role' => User::ROLE_SUPER_ADMIN, 'is_active' => true]);
+    }
+
+    public function test_order_create_page_loads(): void
+    {
+        $customer = Customer::create(['name' => 'Test Customer', 'phone' => '08123456789']);
+
+        $response = $this->actingAs($this->admin())
+            ->get('/admin/orders/create');
+
+        $response->assertOk();
+        $response->assertSee($customer->name);
     }
 
     public function test_order_total_calculation(): void
@@ -106,5 +118,32 @@ class OrderFlowTest extends TestCase
 
         $first = Order::first();
         $this->assertMatchesRegularExpression('/^ORD-\d{4}-\d{2}-\d{4}$/', $first->order_number);
+    }
+
+    public function test_lead_to_order_conversion(): void
+    {
+        $customer = Customer::create(['name' => 'Cust']);
+        $lead = Lead::create([
+            'contact_name' => 'Pak Budi',
+            'phone' => '081234567890',
+            'status' => 'new',
+            'customer_id' => $customer->id,
+        ]);
+
+        $this->actingAs($this->admin())
+            ->post('/admin/orders', [
+                'customer_id' => $customer->id,
+                'lead_id' => $lead->id,
+                'order_date' => now()->format('Y-m-d'),
+                'status' => 'lead',
+                'items' => [
+                    ['description' => 'A', 'quantity' => 1, 'unit_price' => 100000, 'hpp' => 50000],
+                ],
+            ])
+            ->assertRedirect();
+
+        // Lead should be marked as won
+        $lead->refresh();
+        $this->assertEquals('won', $lead->status);
     }
 }
