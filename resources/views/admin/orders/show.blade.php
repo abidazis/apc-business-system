@@ -47,25 +47,28 @@
         <div class="col-lg-6">
             <div class="apc-card">
                 <div class="card-body p-3 p-md-4">
-                    <h6 class="fw-bold mb-3" style="font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--apc-text-muted);">Status Produksi & Keuangan</h6>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0" style="font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--apc-text-muted);">Status Produksi & Keuangan</h6>
+                        <span class="apc-badge apc-badge-dark">{{ \App\Models\Order::STATUSES[$order->status] }}</span>
+                    </div>
                     @php
                         $nextStatuses = $order->getNextPossibleStatuses();
                         $hasNext = count($nextStatuses) > 0;
                     @endphp
                     @if($hasNext)
-                    <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-flex gap-2 mb-3">
+                    <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-flex gap-2 mb-3 align-items-center">
                         @csrf
-                        <select name="status" class="apc-select">
+                        <select name="status" class="apc-select" style="flex: 1; min-width: 140px;">
                             @foreach($nextStatuses as $k)
                                 <option value="{{ $k }}">{{ \App\Models\Order::STATUSES[$k] }}</option>
                             @endforeach
                         </select>
-                        <button class="apc-btn apc-btn-dark apc-btn-sm">Update</button>
+                        <button class="apc-btn apc-btn-dark apc-btn-sm flex-shrink-0">Update</button>
                     </form>
                     @else
                     <div class="alert alert-secondary mb-3">
-                        <i class="bi bi-info-circle"></i>
-                        Status sudah final: <strong>{{ \App\Models\Order::STATUSES[$order->status] }}</strong>
+                        <i class="bi bi-check-circle"></i>
+                        Status sudah final
                     </div>
                     @endif
                     <table class="apc-table" style="background: transparent;">
