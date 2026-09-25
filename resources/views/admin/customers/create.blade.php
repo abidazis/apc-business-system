@@ -7,7 +7,7 @@
     <form method="POST" action="{{ route('admin.customers.store') }}">
         @csrf
         <div class="apc-card" style="max-width: 700px;">
-            <div class="card-body p-3 p-md-4">@include('admin.customers._form')</div>
+            <div class="card-body p-3 p-md-4">@include('admin.customers._form', ['customer' => null])</div>
         </div>
         <div class="d-flex gap-2 mt-4">
             <button class="apc-btn apc-btn-primary">Simpan</button>
