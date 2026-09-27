@@ -70,6 +70,27 @@
     </div>
 
     <div class="apc-card mt-3">
+        <div class="p-3 p-md-4 border-bottom" style="border-color: var(--apc-border) !important;"><h2 style="font-size: 14px; font-weight: 700; margin: 0;">Arus Kas Harian · {{ $start->format('d M') }} - {{ $end->format('d M Y') }}</h2></div>
+        <div class="apc-table-wrap" style="border: 0; border-radius: 0;">
+            <table class="apc-table">
+                <thead><tr><th>Tanggal</th><th class="text-end">Pemasukan</th><th class="text-end">Pengeluaran</th><th class="text-end">Saldo</th></tr></thead>
+                <tbody>
+                    @forelse($cashFlow as $row)
+                        <tr>
+                            <td>{{ \App\Services\Formatter::dateId($row['date']) }}</td>
+                            <td class="text-end" style="color: var(--apc-green);">{{ $row['income'] > 0 ? \App\Services\Formatter::money($row['income']) : '-' }}</td>
+                            <td class="text-end" style="color: var(--apc-red);">{{ $row['expense'] > 0 ? \App\Services\Formatter::money($row['expense']) : '-' }}</td>
+                            <td class="text-end fw-bold" style="color: {{ $row['balance'] >= 0 ? 'var(--apc-green)' : 'var(--apc-red)' }};">{{ \App\Services\Formatter::money($row['balance']) }}</td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="4" class="text-center apc-muted py-4">Belum ada data arus kas.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="apc-card mt-3">
         <div class="p-3 p-md-4 border-bottom" style="border-color: var(--apc-border) !important;"><h2 style="font-size: 14px; font-weight: 700; margin: 0;">Order · {{ $start->format('d M') }} - {{ $end->format('d M Y') }}</h2></div>
         <div class="apc-table-wrap" style="border: 0; border-radius: 0;">
             <table class="apc-table">

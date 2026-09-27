@@ -76,10 +76,44 @@ class ReportController extends Controller
             ->limit(10)
             ->get();
 
+        // Daily Cash Flow: group payments and expenses by date
+        $paymentsDaily = Payment::whereBetween('payment_date', [$start, $end])
+            ->selectRaw('DATE(payment_date) as date, SUM(amount) as total')
+            ->groupBy('date')
+            ->pluck('total', 'date')
+            ->toArray();
+
+        $expensesDaily = Expense::whereBetween('date', [$start, $end])
+            ->selectRaw('DATE(date) as date, SUM(amount) as total')
+            ->groupBy('date')
+            ->pluck('total', 'date')
+            ->toArray();
+
+        // Build daily cash flow rows
+        $cashFlow = [];
+        $runningBalance = 0;
+        $current = $start->copy();
+
+        while ($current <= $end) {
+            $dateKey = $current->format('Y-m-d');
+            $income = (float) ($paymentsDaily[$dateKey] ?? 0);
+            $exp = (float) ($expensesDaily[$dateKey] ?? 0);
+            $runningBalance += $income - $exp;
+
+            $cashFlow[] = [
+                'date' => $current->copy(),
+                'income' => $income,
+                'expense' => $exp,
+                'balance' => $runningBalance,
+            ];
+
+            $current->addDay();
+        }
+
         return view('admin.reports.index', compact(
             'revenue', 'payment', 'expense', 'hpp', 'grossProfit', 'netProfit',
             'orders', 'topCustomers', 'topProducts',
-            'start', 'end', 'preset'
+            'start', 'end', 'preset', 'cashFlow'
         ));
     }
 }
