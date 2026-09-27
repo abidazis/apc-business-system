@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Expense;
+use App\Models\ExpenseCategory;
 use App\Models\Order;
 use App\Models\Payment;
 use Carbon\Carbon;
@@ -38,7 +39,15 @@ class ReportController extends Controller
             ->sum('total');
 
         $payment = (float) Payment::whereBetween('payment_date', [$start, $end])->sum('amount');
-        $expense = (float) Expense::whereBetween('date', [$start, $end])->sum('amount');
+
+        // Total expenses (all for cash flow / saldo)
+        $totalExpense = (float) Expense::whereBetween('date', [$start, $end])->sum('amount');
+
+        // Operational expenses only (for Net Profit calculation)
+        $operationalCategoryIds = ExpenseCategory::where('is_operational', true)->pluck('id');
+        $operationalExpense = (float) Expense::whereBetween('date', [$start, $end])
+            ->whereIn('expense_category_id', $operationalCategoryIds)
+            ->sum('amount');
 
         // HPP: only from non-cancelled orders
         $hpp = (float) Order::whereBetween('order_date', [$start, $end])
@@ -48,7 +57,8 @@ class ReportController extends Controller
             ->sum(fn ($o) => $o->hpp_total);
 
         $grossProfit = $revenue - $hpp;
-        $netProfit = $grossProfit - $expense;
+        $netProfit = $grossProfit - $operationalExpense;
+        $currentBalance = $payment - $totalExpense;
 
         $orders = Order::with('customer')
             ->whereBetween('order_date', [$start, $end])
@@ -111,7 +121,7 @@ class ReportController extends Controller
         }
 
         return view('admin.reports.index', compact(
-            'revenue', 'payment', 'expense', 'hpp', 'grossProfit', 'netProfit',
+            'revenue', 'payment', 'totalExpense', 'operationalExpense', 'hpp', 'grossProfit', 'netProfit', 'currentBalance',
             'orders', 'topCustomers', 'topProducts',
             'start', 'end', 'preset', 'cashFlow'
         ));

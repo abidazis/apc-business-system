@@ -11,6 +11,7 @@ class ExpenseCategoryController extends Controller
     public function index()
     {
         $categories = ExpenseCategory::withCount('expenses')->orderBy('name')->get();
+
         return view('admin.expense-categories.index', compact('categories'));
     }
 
@@ -24,8 +25,11 @@ class ExpenseCategoryController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'slug' => ['nullable', 'string', 'max:120'],
+            'is_operational' => ['boolean'],
         ]);
+        $data['is_operational'] = $request->boolean('is_operational');
         ExpenseCategory::create($data);
+
         return redirect()->route('admin.expense-categories.index')->with('success', 'Kategori dibuat.');
     }
 
@@ -39,14 +43,18 @@ class ExpenseCategoryController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'slug' => ['nullable', 'string', 'max:120'],
+            'is_operational' => ['boolean'],
         ]);
+        $data['is_operational'] = $request->boolean('is_operational');
         $expenseCategory->update($data);
+
         return redirect()->route('admin.expense-categories.index')->with('success', 'Kategori diperbarui.');
     }
 
     public function destroy(ExpenseCategory $expenseCategory)
     {
         $expenseCategory->delete();
+
         return redirect()->route('admin.expense-categories.index')->with('success', 'Kategori dihapus.');
     }
 }

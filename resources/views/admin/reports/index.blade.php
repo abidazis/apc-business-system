@@ -18,17 +18,30 @@
 
     @php
         $r = [
-            ['Revenue', $revenue, 'primary', 'cash-stack'],
-            ['Uang Masuk', $payment, 'success', 'arrow-down-circle'],
-            ['Pengeluaran', $expense, 'danger', 'wallet2'],
-            ['HPP', $hpp, 'secondary', 'box-seam'],
-            ['Gross Profit', $grossProfit, 'info', 'graph-up'],
-            ['Net Profit', $netProfit, $netProfit >= 0 ? 'success' : 'danger', 'piggy-bank'],
+            ['Revenue', $revenue, 'primary', 'cash-stack', 'Total nilai order'],
+            ['Uang Masuk', $payment, 'success', 'arrow-down-circle', 'Total pembayaran dari pelanggan'],
+            ['Pengeluaran', $totalExpense, 'danger', 'wallet2', 'Total semua pengeluaran'],
+            ['Biaya Operasional', $operationalExpense, 'secondary', 'building', 'Sewa, listrik, gaji, dll'],
+            ['HPP', $hpp, 'secondary', 'box-seam', 'Harga pokok penjualan'],
+            ['Gross Profit', $grossProfit, 'info', 'graph-up', 'Revenue - HPP'],
+            ['Net Profit', $netProfit, $netProfit >= 0 ? 'success' : 'danger', 'piggy-bank', 'Gross Profit - Biaya Operasional'],
+            ['Saldo', $currentBalance, $currentBalance >= 0 ? 'success' : 'danger', 'wallet-fill', 'Uang Masuk - Pengeluaran'],
         ];
     @endphp
     <div class="apc-admin-kpi">
         @foreach($r as $stat)
-            <div class="apc-stat"><div class="apc-stat-label"><i class="bi bi-{{ $stat[3] }}"></i> {{ $stat[0] }}</div><div class="apc-stat-value text-{{ $stat[2] }}">{{ \App\Services\Formatter::money($stat[1]) }}</div></div>
+            <div class="apc-stat">
+                <div class="apc-stat-label">
+                    <i class="bi bi-{{ $stat[3] }}"></i> {{ $stat[0] }}
+                    @if(isset($stat[4]))
+                        <span class="apc-muted" style="font-size: 10px; cursor: help;" title="{{ $stat[4] }}"><i class="bi bi-info-circle"></i></span>
+                    @endif
+                </div>
+                <div class="apc-stat-value text-{{ $stat[2] }}">{{ \App\Services\Formatter::money($stat[1]) }}</div>
+                @if(isset($stat[4]))
+                    <div class="apc-muted" style="font-size: 10px; margin-top: 2px;">{{ $stat[4] }}</div>
+                @endif
+            </div>
         @endforeach
     </div>
 
