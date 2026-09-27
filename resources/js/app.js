@@ -25,6 +25,29 @@ const swalConfig = {
     },
 };
 
+// SweetAlert2 config for delete actions
+const swalDeleteConfig = {
+    customClass: {
+        popup: 'apc-swal-popup',
+        title: 'apc-swal-title',
+        htmlContainer: 'apc-swal-text',
+        confirmButton: 'apc-btn apc-btn-danger-confirm apc-btn-sm',
+        cancelButton: 'apc-btn apc-btn-outline apc-btn-sm',
+        actions: 'apc-swal-actions',
+        icon: 'apc-swal-icon',
+    },
+    buttonsStyling: false,
+    reverseButtons: true,
+    showClass: {
+        popup: 'swal2-show apc-swal-animate-in',
+        backdrop: 'swal2-backdrop-show',
+    },
+    hideClass: {
+        popup: 'swal2-hide',
+        backdrop: 'swal2-backdrop-hide',
+    },
+};
+
 // Inline confirm buttons (onclick="return confirm(...)")
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.alert-dismissible.fade.show').forEach((el) => {
@@ -38,13 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             const message = form.dataset.confirm || 'Apakah Anda yakin?';
+            const isDelete = form.id === 'delete-order-form' || form.querySelector('.apc-btn-danger');
+
             Swal.fire({
-                ...swalConfig,
-                title: 'Konfirmasi',
+                ...(isDelete ? swalDeleteConfig : swalConfig),
+                title: isDelete ? 'Hapus Order?' : 'Konfirmasi',
                 text: message,
-                icon: 'warning',
+                icon: isDelete ? 'error' : 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Lanjutkan',
+                confirmButtonText: isDelete ? 'Ya, Hapus' : 'Ya, Lanjutkan',
                 cancelButtonText: 'Batal',
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -99,6 +124,28 @@ window.apcConfirm = (message, callback) => {
     }).then((result) => {
         if (result.isConfirmed && typeof callback === 'function') {
             callback();
+        }
+    });
+};
+
+// Confirm Delete Order
+window.confirmDeleteOrder = () => {
+    const form = document.getElementById('delete-order-form');
+    Swal.fire({
+        ...swalConfig,
+        title: 'Hapus Order?',
+        text: 'Data order akan dihapus permanen. Pastikan Anda yakin dengan tindakan ini.',
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        customClass: {
+            ...swalConfig.customClass,
+            confirmButton: 'apc-btn apc-btn-danger-confirm apc-btn-sm',
+        },
+    }).then((result) => {
+        if (result.isConfirmed && form) {
+            form.submit();
         }
     });
 };

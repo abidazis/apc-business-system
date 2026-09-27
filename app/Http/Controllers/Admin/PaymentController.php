@@ -35,6 +35,17 @@ class PaymentController extends Controller
         return view('admin.payments.create', compact('orders', 'selected'));
     }
 
+    public function edit(Payment $payment)
+    {
+        $orders = Order::whereNotIn('status', ['cancelled'])
+            ->with('customer')
+            ->orderByDesc('order_date')
+            ->limit(200)
+            ->get();
+
+        return view('admin.payments.edit', compact('orders', 'payment'));
+    }
+
     public function store(PaymentRequest $request)
     {
         $data = $request->validated();

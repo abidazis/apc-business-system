@@ -1987,6 +1987,21 @@ img { max-width: 100%; height: auto; display: block; }
     }
 }
 
+// Danger/Delete button - Red APC
+.apc-swal-popup .apc-btn-danger-confirm {
+    background: linear-gradient(135deg, var(--apc-danger) 0%, #b91c1c 100%) !important;
+    color: var(--apc-white) !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
+    font-weight: 700;
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+        background: linear-gradient(135deg, #ef4444 0%, var(--apc-danger) 100%) !important;
+    }
+    &:active { transform: translateY(0); }
+}
+
 // Animations
 .apc-swal-animate-in {
     animation: apc-pop-spring 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);

@@ -8,6 +8,12 @@
             <a href="{{ route('admin.invoices.create', ['order' => $order->id]) }}" class="apc-btn apc-btn-outline-dark apc-btn-sm">Buat Invoice</a>
         @endif
         <a href="{{ route('admin.orders.edit', $order) }}" class="apc-btn apc-btn-primary apc-btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+        <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="d-inline" id="delete-order-form" data-confirm="Yakin ingin menghapus order ini? Data yang dihapus tidak dapat dikembalikan.">
+            @csrf @method('DELETE')
+            <button type="submit" class="apc-btn apc-btn-danger apc-btn-sm">
+                <i class="bi bi-trash"></i> Hapus
+            </button>
+        </form>
     </x-admin::page-header>
 
     <div class="row g-3 mb-3">
