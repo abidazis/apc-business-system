@@ -2,6 +2,13 @@
 @section('title', \App\Support\Settings::get('business_short', 'APC') . ' — ' . \App\Support\Settings::get('tagline'))
 @section('meta_description', \App\Support\Settings::get('tagline'))
 
+@push('styles')
+<style>
+/* Homepage Specific Overrides */
+.apc-hero-enhanced { min-height: 88vh; }
+</style>
+@endpush
+
 @section('content')
 @php
     $business = \App\Support\Settings::get('business_short', 'APC');
@@ -9,25 +16,26 @@
     $aboutShort = \App\Support\Settings::get('about_short');
     $heroImg = \App\Support\Settings::get('hero_image');
     $waUrl = \App\Support\WhatsApp::url(\App\Support\WhatsApp::messageGeneral());
+    $phone = \App\Support\Settings::get('phone');
     $isHomepage = true;
 @endphp
 
 {{-- ============================================================
-     SECTION 1 — HERO
+     HERO SECTION — Enhanced Modern Design
      ============================================================ --}}
-<section class="apc-hero" id="beranda">
+<section class="apc-hero-enhanced" id="beranda">
     <div class="apc-container">
-        <div class="apc-hero-grid">
-            <div class="apc-hero-content">
+        <div class="apc-hero-enhanced-grid">
+            <div class="apc-hero-enhanced-content">
                 <span class="apc-eyebrow apc-eyebrow-dark">
                     <span class="apc-eyebrow-dot"></span> Atribut Paskibra Cikarang
                 </span>
                 <h1>
                     Perlengkapan Paskibra untuk Tim yang
-                    <span class="apc-hero-accent">Siap Tampil Maksimal.</span>
+                    <span class="accent">Siap Tampil Maksimal.</span>
                 </h1>
-                <p class="apc-hero-lead">{{ $aboutShort ?: $tagline }}</p>
-                <div class="apc-hero-ctas">
+                <p class="apc-hero-enhanced-lead">{{ $aboutShort ?: $tagline }}</p>
+                <div class="apc-hero-enhanced-ctas">
                     <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="apc-btn apc-btn-wa apc-btn-lg">
                         <i class="bi bi-whatsapp"></i> Chat WhatsApp
                     </a>
@@ -35,38 +43,35 @@
                         <i class="bi bi-grid-3x3-gap"></i> Lihat Produk
                     </a>
                 </div>
-                <div class="apc-hero-meta">
-                    <span><span class="apc-dot"></span>Konsultasi gratis</span>
-                    <span><span class="apc-dot"></span>Produk customizable</span>
-                    <span><span class="apc-dot"></span>Individu &amp; instansi</span>
+                <div class="apc-hero-enhanced-meta">
+                    <span><i class="bi bi-check-circle-fill" style="color:var(--apc-yellow);"></i> Konsultasi gratis</span>
+                    <span><i class="bi bi-check-circle-fill" style="color:var(--apc-yellow);"></i> Produk customizable</span>
+                    <span><i class="bi bi-check-circle-fill" style="color:var(--apc-yellow);"></i>Individu &amp; instansi</span>
                 </div>
             </div>
-            <div class="apc-hero-visual">
+            <div class="apc-hero-enhanced-visual">
                 @if($heroImg)
                     <img src="{{ asset('storage/' . $heroImg) }}" alt="{{ $business }} — Perlengkapan Paskibra" loading="eager">
                 @else
-                    <div class="apc-hero-placeholder">
-                        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <rect width="400" height="400" rx="24" fill="#1a1a1a"/>
-                            <path d="M200 80 L260 160 L200 200 L140 160 Z" fill="#FFC600" opacity="0.9"/>
-                            <path d="M200 200 L260 160 L300 200 L200 280 L100 200 L140 160 Z" fill="#FFC600" opacity="0.6"/>
-                            <circle cx="200" cy="310" r="40" fill="#FFC600" opacity="0.3"/>
-                            <text x="200" y="318" text-anchor="middle" font-size="14" font-weight="700" fill="#FFC600" font-family="Inter, sans-serif">APC</text>
-                        </svg>
+                    <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,#2a2a2a);display:flex;align-items:center;justify-content:center;">
+                        <div style="text-align:center;">
+                            <div style="font-size:72px;margin-bottom:16px;">⚽</div>
+                            <div style="color:var(--apc-yellow);font-size:24px;font-weight:900;">APC</div>
+                        </div>
                     </div>
                 @endif
-                <div class="apc-hero-float apc-hero-float-top d-none d-md-block">
-                    <span class="apc-hero-float-icon"><i class="bi bi-chat-dots-fill"></i></span>
+                <div class="apc-hero-enhanced-badge top">
+                    <i class="bi bi-stars"></i>
                     <div>
-                        <strong>Konsultasi</strong>
-                        <span>Diskusi via WhatsApp</span>
+                        <strong>100+ Proyek</strong>
+                        <span style="font-size:11px;display:block;opacity:.7;">Selesai dipercaya</span>
                     </div>
                 </div>
-                <div class="apc-hero-float apc-hero-float-bottom d-none d-md-block">
-                    <span class="apc-hero-float-icon apc-hero-float-icon-yellow"><i class="bi bi-box-seam-fill"></i></span>
+                <div class="apc-hero-enhanced-badge bottom">
+                    <i class="bi bi-shield-check"></i>
                     <div>
-                        <strong>Siap Kirim</strong>
-                        <span>Untuk event Anda</span>
+                        <strong>Kualitas Terjamin</strong>
+                        <span style="font-size:11px;display:block;opacity:.7;">Standar tinggi</span>
                     </div>
                 </div>
             </div>
@@ -75,16 +80,42 @@
 </section>
 
 {{-- ============================================================
-     SECTION 2 — QUICK TRUST / VALUE PROPS
+     STATS SECTION — Quick Numbers
      ============================================================ --}}
-<section class="apc-trust" aria-label="Nilai tambah APC">
+<section class="apc-stats-section">
+    <div class="apc-container">
+        <div class="apc-stats-grid">
+            <div class="apc-stat-item">
+                <span class="apc-stat-num">5+</span>
+                <span class="apc-stat-label">Tahun Pengalaman</span>
+            </div>
+            <div class="apc-stat-item">
+                <span class="apc-stat-num">100+</span>
+                <span class="apc-stat-label">Proyek Selesai</span>
+            </div>
+            <div class="apc-stat-item">
+                <span class="apc-stat-num">50+</span>
+                <span class="apc-stat-label">Sekolah Terlayani</span>
+            </div>
+            <div class="apc-stat-item">
+                <span class="apc-stat-num">24/7</span>
+                <span class="apc-stat-label">Dukungan Konsultasi</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ============================================================
+     TRUST / VALUE PROPS
+     ============================================================ --}}
+<section class="apc-section apc-section-white" aria-label="Nilai tambah APC">
     <div class="apc-container">
         <div class="apc-trust-grid">
             <div class="apc-trust-item">
                 <span class="apc-trust-icon"><i class="bi bi-shield-check"></i></span>
                 <div>
                     <strong>Fokus Kebutuhan Paskibra</strong>
-                    <span>Spesialis atribut untuk Paskibra sekolah hinggaevent profesional.</span>
+                    <span>Spesialis atribut untuk Paskibra sekolah hingga event profesional.</span>
                 </div>
             </div>
             <div class="apc-trust-item">
@@ -113,18 +144,18 @@
 </section>
 
 {{-- ============================================================
-     SECTION 3 — FEATURED PRODUCTS
+     FEATURED PRODUCTS — Enhanced Cards
      ============================================================ --}}
 @if($featuredProducts->count())
-<section class="apc-section apc-section-white" id="produk" aria-labelledby="produk-heading">
+<section class="apc-section apc-section-soft" id="produk" aria-labelledby="produk-heading">
     <div class="apc-container">
         <div class="apc-section-head">
             <div>
-                <span class="apc-eyebrow">Produk</span>
-                <h2 class="apc-section-title mt-2" id="produk-heading">Produk Unggulan</h2>
-                <p class="apc-section-subtitle" style="margin-left:0;">Pilihan favorit pelanggan Paskibra.</p>
+                <span class="apc-section-label"><i class="bi bi-lightning-fill"></i> Produk Unggulan</span>
+                <h2 class="apc-section-title-enhanced" id="produk-heading">Pilihan Favorit Paskibra</h2>
+                <p class="apc-section-desc">Produk berkualitas tinggi yang sudah dipercaya oleh banyak sekolah dan komunitas.</p>
             </div>
-            <a href="{{ route('public.products.index') }}" class="apc-btn apc-btn-outline-dark apc-btn-sm">
+            <a href="{{ route('public.products.index') }}" class="apc-btn apc-btn-dark apc-btn-sm">
                 Semua Produk <i class="bi bi-arrow-right"></i>
             </a>
         </div>
@@ -132,19 +163,21 @@
         <div class="apc-scroll-track" role="region" aria-label="Produk carousel" tabindex="0">
             <div class="apc-scroll-inner">
                 @foreach($featuredProducts as $product)
-                <a href="{{ route('public.products.show', $product->slug) }}" class="apc-product-card">
-                    <div class="apc-product-card-img">
+                <a href="{{ route('public.products.show', $product->slug) }}" class="apc-product-card-enhanced">
+                    <div class="apc-product-card-enhanced-img">
                         <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy">
+                        <div class="apc-product-card-enhanced-overlay">
+                            <span><i class="bi bi-eye"></i> Lihat Detail</span>
+                        </div>
                     </div>
-                    <div class="apc-product-card-body">
+                    <div class="apc-product-card-enhanced-body">
                         @if($product->category)
-                            <span class="apc-product-card-cat">{{ $product->category->name }}</span>
+                            <span class="apc-product-card-enhanced-cat">{{ $product->category->name }}</span>
                         @endif
-                        <h3 class="apc-product-card-name">{{ $product->name }}</h3>
+                        <h3 class="apc-product-card-enhanced-name">{{ $product->name }}</h3>
                         @if($product->price)
-                            <span class="apc-product-card-price">{{ $product->formatted_price }}</span>
+                            <span class="apc-product-card-enhanced-price">{{ $product->formatted_price }}</span>
                         @endif
-                        <span class="apc-product-card-cta"><i class="bi bi-arrow-right"></i></span>
                     </div>
                 </a>
                 @endforeach
@@ -161,14 +194,35 @@
 @endif
 
 {{-- ============================================================
-     SECTION 4 — PRODUCT CATEGORIES
+     CTA BANNER — Mid Page
+     ============================================================ --}}
+<section class="apc-container">
+    <div class="apc-cta-banner">
+        <div class="apc-cta-banner-content">
+            <h2>Butuh Atribut Paskibra Custom?</h2>
+            <p>Konsultasikan kebutuhan spesifik Anda — dari desain, jumlah, hingga deadline. APC siap membantu!</p>
+            <div class="apc-cta-banner-btns">
+                <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="apc-btn apc-btn-yellow apc-btn-lg">
+                    <i class="bi bi-whatsapp"></i> Mulai Konsultasi
+                </a>
+                <a href="{{ route('public.products.index') }}" class="apc-btn apc-btn-outline-light apc-btn-lg">
+                    <i class="bi bi-grid-3x3-gap"></i> Lihat Katalog
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ============================================================
+     PRODUCT CATEGORIES
      ============================================================ --}}
 @if($categories->count())
-<section class="apc-section apc-section-soft" id="kategori" aria-labelledby="kategori-heading">
+<section class="apc-section apc-section-white" id="kategori" aria-labelledby="kategori-heading">
     <div class="apc-container">
         <div class="apc-section-head-center">
-            <span class="apc-eyebrow">Kategori</span>
-            <h2 class="apc-section-title mt-2" id="kategori-heading">Temukan sesuai kebutuhan</h2>
+            <span class="apc-section-label"><i class="bi bi-tags-fill"></i> Kategori</span>
+            <h2 class="apc-section-title-enhanced" id="kategori-heading">Temukan Sesuai Kebutuhan</h2>
+            <p class="apc-section-desc" style="margin-inline:auto;">Berbagai kategori atribut Paskibra untuk memenuhi segala kebutuhan Anda.</p>
         </div>
         <div class="apc-cat-scroll-track">
             <div class="apc-cat-scroll-inner">
@@ -185,54 +239,53 @@
 @endif
 
 {{-- ============================================================
-     SECTION 5 — PORTFOLIO / SOCIAL PROOF
+     PORTFOLIO — Social Proof Enhanced
      ============================================================ --}}
 @if($portfolios->count())
-<section class="apc-section apc-section-white" id="portfolio" aria-labelledby="portfolio-heading">
+<section class="apc-section apc-section-soft" id="portfolio" aria-labelledby="portfolio-heading">
     <div class="apc-container">
         <div class="apc-section-head">
             <div>
-                <span class="apc-eyebrow">Portfolio</span>
-                <h2 class="apc-section-title mt-2" id="portfolio-heading">Sudah Dipercaya untuk Kebutuhan Paskibra</h2>
-                <p class="apc-section-subtitle" style="margin-left:0;">Beberapa pekerjaan yang telah kami selesaikan.</p>
+                <span class="apc-section-label"><i class="bi bi-award-fill"></i> Portfolio</span>
+                <h2 class="apc-section-title-enhanced" id="portfolio-heading">Sudah Dipercaya Banyak Sekolah</h2>
+                <p class="apc-section-desc">Hasil pekerjaan yang telah diselesaikan dan dipercaya oleh berbagai institusi.</p>
             </div>
-            <a href="{{ route('public.portfolio.index') }}" class="apc-btn apc-btn-outline-dark apc-btn-sm">
+            <a href="{{ route('public.portfolio.index') }}" class="apc-btn apc-btn-dark apc-btn-sm">
                 Semua Portfolio <i class="bi bi-arrow-right"></i>
             </a>
         </div>
 
-        <div class="apc-scroll-track" role="region" aria-label="Portfolio carousel" tabindex="0">
-            <div class="apc-scroll-inner">
-                @foreach($portfolios as $p)
-                <a href="{{ route('public.portfolio.show', $p->slug) }}" class="apc-portfolio-card">
-                    <div class="apc-portfolio-card-img">
+        <div class="row g-4">
+            @foreach($portfolios as $p)
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ route('public.portfolio.show', $p->slug) }}" class="apc-portfolio-card-enhanced">
+                    <div class="apc-portfolio-card-enhanced-img">
                         <img src="{{ $p->cover_image_url }}" alt="{{ $p->title }}" loading="lazy">
-                        <div class="apc-portfolio-card-overlay">
-                            <span class="apc-portfolio-card-view"><i class="bi bi-eye"></i> Lihat</span>
+                    </div>
+                    <div class="apc-portfolio-card-enhanced-overlay">
+                        <div class="apc-portfolio-card-enhanced-body">
+                            <h3 class="apc-portfolio-card-enhanced-title">{{ $p->title }}</h3>
+                            @if($p->customer_name)
+                                <span class="apc-portfolio-card-enhanced-meta">{{ $p->customer_name }}</span>
+                            @endif
                         </div>
                     </div>
-                    <div class="apc-portfolio-card-body">
-                        <h3 class="apc-portfolio-card-name">{{ $p->title }}</h3>
-                        @if($p->customer_name)
-                            <span class="apc-portfolio-card-meta">{{ $p->customer_name }}</span>
-                        @endif
-                    </div>
                 </a>
-                @endforeach
             </div>
+            @endforeach
         </div>
     </div>
 </section>
 @endif
 
 {{-- ============================================================
-     SECTION 6 — HOW TO ORDER / CARA ORDER
+     HOW TO ORDER — Timeline
      ============================================================ --}}
 <section class="apc-section apc-section-dark" id="cara-order" aria-labelledby="order-heading">
     <div class="apc-container">
         <div class="apc-section-head-center">
             <span class="apc-eyebrow apc-eyebrow-yellow">Proses</span>
-            <h2 class="apc-section-title mt-2" id="order-heading">Cara Order di APC</h2>
+            <h2 class="apc-section-title" style="color:var(--apc-white);" id="order-heading">Cara Order di APC</h2>
             <p class="apc-section-subtitle" style="color:rgba(255,255,255,0.6);">Mudah dan transparan — dari konsultasi hingga pesanan selesai.</p>
         </div>
 
@@ -292,16 +345,16 @@
 </section>
 
 {{-- ============================================================
-     SECTION 7 — ABOUT PREVIEW
+     ABOUT PREVIEW
      ============================================================ --}}
 <section class="apc-section apc-section-white" id="tentang" aria-labelledby="tentang-heading">
     <div class="apc-container">
         <div class="apc-about-grid">
             <div class="apc-about-content">
-                <span class="apc-eyebrow">Tentang APC</span>
-                <h2 class="apc-section-title mt-2" id="tentang-heading"> Mitra Tepercaya untuk Kebutuhan Paskibra.</h2>
+                <span class="apc-section-label"><i class="bi bi-building"></i> Tentang APC</span>
+                <h2 class="apc-section-title-enhanced" id="tentang-heading">Mitra Tepercaya untuk Kebutuhan Paskibra.</h2>
                 <p class="apc-about-body">
-                    APC adalah solusi perlengkapan dan atribut Paskibra yang memahami kebutuhan sekolah, komunitas, danevent di seluruh Indonesia. Dengan pengalaman dan fokus pada kualitas, kami membantu tim Paskibra tampil maksimal di setiap kesempatan.
+                    APC adalah solusi perlengkapan dan atribut Paskibra yang memahami kebutuhan sekolah, komunitas, dan event di seluruh Indonesia. Dengan pengalaman dan fokus pada kualitas, kami membantu tim Paskibra tampil maksimal di setiap kesempatan.
                 </p>
                 <ul class="apc-about-values">
                     <li>
@@ -340,18 +393,18 @@
 </section>
 
 {{-- ============================================================
-     SECTION 8 — FAQ PREVIEW
+     FAQ PREVIEW
      ============================================================ --}}
 @if($homepageFaqs->count())
 <section class="apc-section apc-section-soft" id="faq" aria-labelledby="faq-heading">
     <div class="apc-container">
         <div class="apc-section-head">
             <div>
-                <span class="apc-eyebrow">FAQ</span>
-                <h2 class="apc-section-title mt-2" id="faq-heading">Pertanyaan Umum</h2>
-                <p class="apc-section-subtitle" style="margin-left:0;">Jawaban untuk hal yang sering ditanyakan.</p>
+                <span class="apc-section-label"><i class="bi bi-question-circle-fill"></i> FAQ</span>
+                <h2 class="apc-section-title-enhanced" id="faq-heading">Pertanyaan Umum</h2>
+                <p class="apc-section-desc">Jawaban untuk hal yang sering ditanyakan.</p>
             </div>
-            <a href="{{ url('/faq') }}" class="apc-btn apc-btn-outline-dark apc-btn-sm">
+            <a href="{{ url('/faq') }}" class="apc-btn apc-btn-dark apc-btn-sm">
                 FAQ Lengkap <i class="bi bi-arrow-right"></i>
             </a>
         </div>
@@ -374,30 +427,7 @@
 @endif
 
 {{-- ============================================================
-     SECTION 9 — CONTEXTUAL MID CTA
-     ============================================================ --}}
-<section class="apc-section apc-section-tight apc-section-white">
-    <div class="apc-container">
-        <div class="apc-mid-cta">
-            <div class="apc-mid-cta-content">
-                <span class="apc-eyebrow apc-eyebrow-yellow">Butuh Bantuan?</span>
-                <h2 class="apc-mid-cta-title">Sudah tahu kebutuhanmu?</h2>
-                <p class="apc-mid-cta-body">Kalau masih bingung, konsultasikan langsung dengan APC — gratis dan tanpa komitmen.</p>
-            </div>
-            <div class="apc-mid-cta-action">
-                <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="apc-btn apc-btn-wa apc-btn-lg">
-                    <i class="bi bi-whatsapp"></i> Chat WhatsApp
-                </a>
-                <a href="{{ route('public.products.index') }}" class="apc-btn apc-btn-ghost apc-btn-lg">
-                    Lihat Produk <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- ============================================================
-     SECTION 10 — FINAL CTA
+     FINAL CTA — Contact Section
      ============================================================ --}}
 <section class="apc-section apc-section-final">
     <div class="apc-container">
@@ -414,6 +444,11 @@
                         Lihat Produk
                     </a>
                 </div>
+                @if($phone)
+                <p style="margin-top: 20px; font-size: 14px; color: rgba(255,255,255,.6);">
+                    Atau hubungi langsung: <strong style="color: var(--apc-yellow);">{{ $phone }}</strong>
+                </p>
+                @endif
             </div>
         </div>
     </div>
