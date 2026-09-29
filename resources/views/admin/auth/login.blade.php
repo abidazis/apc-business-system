@@ -440,7 +440,11 @@
         <div class="apc-auth-deco apc-auth-deco-3"></div>
 
         <div class="apc-auth-brand-content">
-            <div class="apc-auth-brand-mark">APC</div>
+            @if(\App\Support\Settings::get('logo'))
+                <img src="{{ asset('storage/' . \App\Support\Settings::get('logo')) }}" alt="APC" class="apc-auth-brand-logo">
+            @else
+                <img src="{{ asset('images/logo.jpg') }}" alt="APC" class="apc-auth-brand-logo">
+            @endif
             <h1>Dashboard <span>Admin</span></h1>
             <p>Kelola semua aspek bisnis Anda dengan mudah dan efisien dalam satu platform terpusat.</p>
 

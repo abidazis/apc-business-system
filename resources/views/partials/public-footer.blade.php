@@ -8,13 +8,19 @@
     $footerNote = \App\Support\Settings::get('footer_note');
     $bizShort = \App\Support\Settings::get('business_short', 'APC');
     $tagline = \App\Support\Settings::get('tagline');
+    $logoUrl = \App\Support\Settings::get('logo');
+    $logoFallback = asset('images/logo.jpg');
 @endphp
 <footer class="apc-footer">
     <div class="apc-container">
         <div class="row g-4">
             <div class="col-md-5">
                 <a class="apc-brand" href="{{ url('/') }}" style="color:#fff;">
-                    <span class="apc-brand-mark">APC</span>
+                    @if($logoUrl)
+                        <img src="{{ asset('storage/' . $logoUrl) }}" alt="{{ $bizShort }}" class="apc-footer-logo">
+                    @else
+                        <img src="{{ $logoFallback }}" alt="{{ $bizShort }}" class="apc-footer-logo">
+                    @endif
                     <span>{{ $bizShort }}</span>
                 </a>
                 <p class="mt-3" style="font-size:14px; max-width: 360px;">{{ $tagline }}</p>

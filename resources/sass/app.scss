@@ -1007,7 +1007,41 @@ img { max-width: 100%; height: auto; display: block; }
 .apc-topbar-title { font-weight: 700; font-size: 18px; color: var(--apc-ink); margin: 0; }
 .apc-content { padding: 20px; flex: 1; @media (min-width: 1024px) { padding: 28px; } }
 
-// Admin KPI grid
+// Navbar logo image - properly sized and aligned
+.apc-nav-logo {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+// Admin sidebar logo - bigger and centered
+.apc-sidebar-logo {
+    height: 42px;
+    width: auto;
+    max-width: 140px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+// Auth brand logo - larger and centered
+.apc-auth-brand-logo {
+    width: 100px;
+    height: auto;
+    max-height: 100px;
+    object-fit: contain;
+    margin: 0 auto 32px;
+    display: block;
+}
+
+// Footer logo
+.apc-footer-logo {
+    height: 42px;
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+}
 .apc-admin-kpi {
     display: grid;
     gap: 14px;

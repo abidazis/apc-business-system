@@ -1,6 +1,8 @@
 @php
     $current = Route::currentRouteName();
     $bizShort = \App\Support\Settings::get('business_short', 'APC');
+    $logoUrl = \App\Support\Settings::get('logo');
+    $logoFallback = asset('images/logo.jpg');
     $nav = [
         ['route' => 'admin.dashboard',           'label' => 'Dashboard',     'icon' => 'speedometer2', 'group' => 'Utama'],
         ['route' => 'admin.users.index',         'label' => 'Users',         'icon' => 'people', 'group' => 'Utama'],
@@ -23,7 +25,11 @@
 @endphp
 <aside class="apc-sidebar">
     <div class="apc-sidebar-brand">
-        <span class="mark">APC</span>
+        @if($logoUrl)
+            <img src="{{ asset('storage/' . $logoUrl) }}" alt="{{ $bizShort }}" class="apc-sidebar-logo">
+        @else
+            <img src="{{ $logoFallback }}" alt="{{ $bizShort }}" class="apc-sidebar-logo">
+        @endif
         <div>
             <div class="name">{{ $bizShort }}</div>
             <div class="role">Admin Panel</div>

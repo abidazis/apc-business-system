@@ -1,13 +1,19 @@
 @php
     $businessName = \App\Support\Settings::get('business_name', 'APC');
     $businessShort = \App\Support\Settings::get('business_short', 'APC');
+    $logoUrl = \App\Support\Settings::get('logo');
+    $logoFallback = asset('images/logo.jpg');
     $currentRoute = request()->route() ? request()->route()->getName() : null;
     $isHomepage = request()->routeIs('public.home');
 @endphp
 <header class="apc-nav" id="apcNav">
     <div class="apc-container apc-nav-inner">
         <a class="apc-brand" href="{{ url('/') }}" aria-label="{{ $businessShort }} beranda">
-            <span class="apc-brand-mark">APC</span>
+            @if($logoUrl)
+                <img src="{{ asset('storage/' . $logoUrl) }}" alt="{{ $businessShort }}" class="apc-nav-logo">
+            @else
+                <img src="{{ $logoFallback }}" alt="{{ $businessShort }}" class="apc-nav-logo">
+            @endif
             <span class="d-none d-sm-inline">{{ $businessShort }}</span>
         </a>
 
@@ -35,7 +41,11 @@
     <div class="apc-drawer-panel" role="dialog" aria-label="Menu navigasi">
         <div class="apc-drawer-head">
             <a class="apc-brand" href="{{ url('/') }}">
-                <span class="apc-brand-mark">APC</span>
+                @if($logoUrl)
+                    <img src="{{ asset('storage/' . $logoUrl) }}" alt="{{ $businessShort }}" class="apc-nav-logo">
+                @else
+                    <img src="{{ $logoFallback }}" alt="{{ $businessShort }}" class="apc-nav-logo">
+                @endif
                 <span>{{ $businessShort }}</span>
             </a>
             <button class="apc-burger" type="button" data-close-drawer aria-label="Tutup menu">
