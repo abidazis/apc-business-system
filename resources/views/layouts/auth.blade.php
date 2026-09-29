@@ -10,7 +10,7 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body style="background: var(--apc-gray-50);">
+<body>
     @yield('content')
     @stack('scripts')
 </body>
